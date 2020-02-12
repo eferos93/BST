@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> c5ec8309b65ec99687abdc22845f607824f6213e
 /**
  * bst.hxx file
  * @authors: Eros Fabrici, ... , ....
@@ -5,8 +9,13 @@
 #include <iostream>
 #include <memory>
 
+<<<<<<< HEAD
 #ifndef BST_H__
 #define BST_H__
+=======
+#ifndef BST_HXX__
+#define BST_HXX__
+>>>>>>> c5ec8309b65ec99687abdc22845f607824f6213e
 
 #include "node.hxx"
 #include "iterator.hxx"
@@ -16,6 +25,7 @@ class bst
 {
     private:
         std::unique_ptr<Node> root;
+<<<<<<< HEAD
     public:
         Iterator iterator;
         ConstIterator const_iterator;
@@ -56,6 +66,90 @@ class bst
     }
     
 
+=======
+        CompareType comparator;
+    public:
+        /**
+         * @brief Default constructor
+         */
+        bst() {}
+        
+        /**
+         * @brief Constructor with node
+         * @param data The root of the bst to be created
+         * @param c The instance of the CompareType
+         */
+        bst(std::pair<KeyType, ValueType>& data, CompareType c = CompareType{}):
+                root{new Node{data}}, comparator{c} {}
+        
+        /**
+         * @brief copy constructor
+         * @param bst A reference to another bst
+         */
+        bst(const bst& bst)
+        {    
+            //TODO
+            copy(bst.root);
+        }
+        /**
+         * @brief move constructor
+         * @param bst Bst to be moved to the new one
+         */
+        bst(bst&& bst) noexcept : 
+            root{std::move(bst.root)} {}
+
+        iterator begin()
+        {
+            if(!root)
+            {
+                return new iterator{nullptr};
+            }
+
+            Node * temp = root.get();
+            while (temp->left)
+            {
+                temp = temp->left.get();
+            }
+            
+            return new iterator{temp};
+        }
+
+        iterator end() { return new iterator{nullptr}; }
+
+        const_iterator end() { return new const_iterator{nullptr}; }
+
+        const_iterator cbegin() const
+        {
+            if(!root)
+            {
+                return new const_iterator{nullptr};
+            }
+            Node * temp = root.get();
+            while (temp->left)
+            {
+                temp = temp->left.get();
+            }
+            
+            return new const_iterator{temp};
+        }
+
+        const_iterator cend() const { return new const_iterator(nullptr); }
+
+        const_iterator begin() const 
+        {
+            if(!root)
+            {
+                return new const_iterator{nullptr};
+            }
+            Node * temp = root.get();
+            while (temp->left)
+            {
+                temp = temp->left.get();
+            }
+            
+            return new const_iterator{temp};
+        }
+>>>>>>> c5ec8309b65ec99687abdc22845f607824f6213e
 };
 
 #endif
