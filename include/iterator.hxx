@@ -2,7 +2,7 @@
 
 
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
-class Iterator 
+class iterator 
 {
 
     //bst class will be able to access private fields
@@ -12,7 +12,7 @@ class Iterator
         Node * current;
 
     public:
-        Iterator(Node * node): current{node} {}
+        iterator(Node * node): current{node} {}
 
         /**
          * @brief Operator *iter
@@ -28,7 +28,7 @@ class Iterator
          * traversal
          * @return Iterator& Reference to this iterator with updated state
          */
-        Iterator& operator++()
+        iterator& operator++()
         {
             if (!current)
             {
@@ -60,8 +60,8 @@ class Iterator
          * @brief it++ for iterating to the next node
          * @return Iterator value before advancing to the next node
          */
-        Iterator operator++() {
-            Iterator iter{*this};
+        iterator operator++() {
+            iterator iter{*this};
             ++(*this);
             return iter;
         }
@@ -72,7 +72,7 @@ class Iterator
          * @param rightIt the other iterator, on the right-hand side.
          * @return Bool: true if they point to the same node, false otherwise
          */
-        bool opearator==(const Iterator& rightIt) 
+        bool opearator==(const iterator& rightIt) 
         {
             return current == rightIt.current;
         }
@@ -83,14 +83,14 @@ class Iterator
          * @param rightIt Iterator on the right-hand side.
          * @return True if they are not equal, true othersise.
          */
-        bool operator!=(const Iterator& rightIt)
+        bool operator!=(const iterator& rightIt)
         {
             return current != rightIt.current;
         }
 };
 
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
-class ConstIterator : Iterator
+class const_iterator : iterator
 {
     friend class bst;
     
