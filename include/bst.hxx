@@ -6,8 +6,8 @@
 #include <iostream>
 #include <memory>
 
-#ifndef BST_H__
-#define BST_H__
+#ifndef BST_HXX__
+#define BST_HXX__
 
 #include "node.hxx"
 #include "iterator.hxx"
@@ -38,20 +38,67 @@ class bst
          */
         bst(const bst& bst)
         {    
-            copy(bst.getRoot());
+            //TODO
+            copy(bst.root);
         }
         /**
          * @brief move constructor
          * @param bst Bst to be moved to the new one
          */
         bst(bst&& bst) noexcept : 
-            root{std::move(bst.getRoot())} {}
+            root{std::move(bst.root)} {}
 
-        iterator begin();
-        iterator end() { return new Iterator{nullptr}; }
-        
-            //Iterator iterator;
-            //ConstIterator const_iterator;
+        iterator begin()
+        {
+            if(!root)
+            {
+                return new iterator{nullptr};
+            }
+
+            Node * temp = root.get();
+            while (temp->left)
+            {
+                temp = temp->left.get();
+            }
+            
+            return new iterator{temp};
+        }
+
+        iterator end() { return new iterator{nullptr}; }
+
+        const_iterator end() { return new const_iterator{nullptr}; }
+
+        const_iterator cbegin() const
+        {
+            if(!root)
+            {
+                return new const_iterator{nullptr};
+            }
+            Node * temp = root.get();
+            while (temp->left)
+            {
+                temp = temp->left.get();
+            }
+            
+            return new const_iterator{temp};
+        }
+
+        const_iterator cend() const { return new const_iterator(nullptr); }
+
+        const_iterator begin() const 
+        {
+            if(!root)
+            {
+                return new const_iterator{nullptr};
+            }
+            Node * temp = root.get();
+            while (temp->left)
+            {
+                temp = temp->left.get();
+            }
+            
+            return new const_iterator{temp};
+        }
 };
 
 #endif

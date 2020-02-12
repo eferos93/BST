@@ -20,7 +20,8 @@ class iterator
          */
         std::pair<const KeyType, ValueType>& operator*() const 
         {
-            return current.getData();
+            //return current.getData();
+            return current->data;
         }
 
         /**
@@ -34,21 +35,21 @@ class iterator
             {
                 return *this;
             }
-            else if (current.getRight())
+            else if (current->right)
             {
-                current = current.getRight().get();
-                while (current.getLeft())
+                current = current->right.get();
+                while (current->left)
                 {
-                    current = current.getLeft().get();
+                    current = current->left.get();
                 }
             }
             else
             {
-                Node* temp{current.getParent()};
-                while (temp && current == temp.getRight().get())
+                Node* temp{current->parent};
+                while (temp && current == temp->right.get())
                 {
                     current = temp;
-                    temp = temp.getParent();
+                    temp = temp->parent;
                 }
                 current = temp;
             }

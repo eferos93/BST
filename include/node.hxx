@@ -9,6 +9,7 @@
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
 class Node 
 {   
+    friend class bst, iterator;
     private:
         /**
          * tuple containing the key which is an unique identifier for the node
@@ -50,36 +51,6 @@ class Node
          * @param node Reference to the node to be copied
          */
         Node(const Node& node): 
-            data{node.getData()}, left{nullptr}, right{nullptr},
+            data{node.data}, left{nullptr}, right{nullptr},
             parent{nullptr} {}
-
-        /**
-         * @brief getter for data
-         */
-        std::pair<const KeyType, ValueType> getData() 
-        {
-            return data;
-        }
-
-        /**
-         * @brief getter for left child
-         */
-        std:unique_ptr<Node> getLeft() 
-        {
-            return left;
-        }
-        
-        /**
-         * @brief getter for right child
-         */
-        std::unique_ptr<Node> getRight() 
-        {
-            return right;
-        }
-        /**
-         * @brief getter for parent
-         */
-        Node* getParent() {
-            return parent;
-        }
 };
