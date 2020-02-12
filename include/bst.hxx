@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> c5ec8309b65ec99687abdc22845f607824f6213e
 /**
  * bst.hxx file
  * @authors: Eros Fabrici, ... , ....
@@ -9,13 +5,8 @@
 #include <iostream>
 #include <memory>
 
-<<<<<<< HEAD
-#ifndef BST_H__
-#define BST_H__
-=======
 #ifndef BST_HXX__
 #define BST_HXX__
->>>>>>> c5ec8309b65ec99687abdc22845f607824f6213e
 
 #include "node.hxx"
 #include "iterator.hxx"
@@ -25,7 +16,6 @@ class bst
 {
     private:
         std::unique_ptr<Node> root;
-<<<<<<< HEAD
     public:
         Iterator iterator;
         ConstIterator const_iterator;
@@ -47,13 +37,13 @@ class bst
             Node* cur;
             // keyValue of data is smaller than root so it goes to left side of tree
             if(compare(data.first,root.getData().first)){                   // data.first < root.getData().first
-                insert(root.getLeft(), data);
-                root.getLeft() = cur;
+                insert(root->left, data);
+                root->left = cur;
             }
             // keyValue of data is larger than root so it goes to rigth side of tree
             else if(!compare(data.first,root.getData().first)){             // data.first > root.getData().first
-                insert(root.getRight(), data);
-                root.getRight() = cur;
+                insert(root->rigth, data);
+                root->rigth = cur;
             }
             // Key is already presented in tree
             else{                                                           // data.first == root.getData().first                       
@@ -66,7 +56,6 @@ class bst
     }
     
 
-=======
         CompareType comparator;
     public:
         /**
@@ -149,7 +138,6 @@ class bst
             
             return new const_iterator{temp};
         }
->>>>>>> c5ec8309b65ec99687abdc22845f607824f6213e
 };
 
 #endif
