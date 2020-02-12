@@ -2,7 +2,8 @@
 
 
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
-class Iterator {
+class Iterator 
+{
 
     //bst class will be able to access private fields
     friend class bst;
@@ -11,7 +12,7 @@ class Iterator {
         Node * current;
 
     public:
-        Iterator(Node * node): currentNode{node} {}
+        Iterator(Node * node): current{node} {}
 
         /**
          * @brief Operator *iter
@@ -87,3 +88,15 @@ class Iterator {
             return current != rightIt.current;
         }
 };
+
+template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
+class ConstIterator : Iterator
+{
+    friend class bst;
+    
+    public:
+        const std::pair<const KeyType, ValueType>& operator*() const 
+        {
+            return Iterator::operator*(); 
+        }
+}

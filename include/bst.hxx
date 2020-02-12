@@ -17,9 +17,8 @@ class bst
 {
     private:
         std::unique_ptr<Node> root;
+        CompareType comparator;
     public:
-        Iterator iterator;
-        ConstIterator const_iterator;
 };
 
 #endif
