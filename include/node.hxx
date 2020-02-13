@@ -7,7 +7,7 @@
 //#include <memory>
 
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
-class Node 
+class bst<KeyType, ValueType, CompareType>::Node 
 {   
     friend class bst, iterator;
     private:
