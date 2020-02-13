@@ -9,16 +9,17 @@
 #ifndef BST_HXX__
 #define BST_HXX__
 
-#include "node.hxx"
-#include "iterator.hxx"
-
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
 class bst 
 {
     private:
+        class Node;
         std::unique_ptr<Node> root;
         CompareType comparator;
     public:
+        class __iterator;
+        using iterator = __iterator<Node>
+        using const_iterator = __iterator<const Node>
         /**
          * @brief Default constructor
          */
@@ -100,5 +101,8 @@ class bst
             return new const_iterator{temp};
         }
 };
+
+#include "node.hxx"
+#include "iterator.hxx"
 
 #endif
