@@ -22,6 +22,12 @@ class bst
 
         //Methods
 
+        /**
+         *  @brief Insert the node of given key
+         *  @param root Pointer to root node
+         *  @param data Pair data to be inserted
+         */ 
+
         // given the root and pair data, new node will be created if it doesn't exist in tree
         std::pair<iterator, bool> insert(Node* root,std::pair<const KeyType, ValueType> &data){
 
