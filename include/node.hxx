@@ -6,10 +6,10 @@
 //#include <iostream>
 //#include <memory>
 
-template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
+template<class KeyType, class ValueType, class CompareType>
 class bst<KeyType, ValueType, CompareType>::Node 
 {   
-    friend class bst, iterator;
+    friend class iterator;
     private:
         /**
          * tuple containing the key which is an unique identifier for the node

@@ -4,6 +4,7 @@
  * @authors: Eros Fabrici, ... , ....
  **/
 #include <iostream>
+#include <utility>
 #include <memory>
 
 #ifndef BST_HXX__
@@ -39,7 +40,6 @@ class bst
          */
         bst(const bst& bst)
         {    
-            //TODO
             copy(bst.root);
         }
         /**
@@ -99,6 +99,112 @@ class bst
             }
             
             return new const_iterator{temp};
+        }
+        
+        void copy(const std::unique_ptr<Node> node)
+        {
+            if (node)
+            {
+                insert(node->data);
+                copy(node->left);
+                copy(node->right);
+            }
+        }
+
+        ValueType& operator[](const KeyType& key) noexcept
+        {
+            Node * temp = root.get();
+            while (temp)
+            {
+                if (comparator(key, temp->data.first))
+                {
+                    if (!temp->left)
+                    {
+                        auto pair = new std::pair<KeyType, ValueType>{key, new ValueType{}};
+                        temp->left = new Node<KeyType,ValueType,CompareType>{pair, temp};
+                        return temp->left.get()->data.right;
+                    }
+                    else
+                    {
+                        temp = temp->left.get();
+                    }
+                } 
+                else if(comparator(temp->data.first, key))
+                {
+                    
+                    if (!temp->right)
+                    {
+                        auto pair = new std::pair<KeyType, ValueType>{key, new ValueType{}};
+                        temp->right = new Node<KeyType,ValueType,CompareType>{pair, temp};
+                        return temp->right.get()->data.right;
+                    }
+                    else
+                    {
+                        temp = temp->right.get();
+                    }
+                    
+                }
+                else
+                {
+                     return temp->data.right;
+                }
+                
+            }
+            
+        }
+
+        ValueType& operator[](KeyType&& key) noexcept
+        {
+            Node * temp = root.get();
+            while (temp)
+            {
+                if (comparator(std::forward(key), temp->data.first))
+                {
+                    if (!temp->left)
+                    {
+                        auto pair = new std::pair<KeyType, ValueType>{std::forward(key), ValueType{}};
+                        temp->left = new Node<KeyType,ValueType,CompareType>{pair, temp};
+                        return temp->left.get()->data.right;
+                    }
+                    else
+                    {
+                        temp = temp->left.get();
+                    }
+                } 
+                else if(comparator(temp->data.first, std::forward(key)))
+                {
+                    
+                    if (!temp->right)
+                    {
+                        auto pair = new std::pair<KeyType, ValueType>{std::forward(key), ValueType{}};
+                        temp->right = new Node<KeyType,ValueType,CompareType>{pair, temp};
+                        return temp->right.get()->data.right;
+                    }
+                    else
+                    {
+                        temp = temp->right.get();
+                    }
+                    
+                }
+                else
+                {
+                     return temp->data.right;
+                }
+                
+            }
+            
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const bst& x)
+        {
+            iterator temp = begin();
+            iterator end = end();
+            while (temp!=end)
+            {
+                os << (*temp).right << " "
+                ++temp;
+            }
+            return os;
         }
 };
 
