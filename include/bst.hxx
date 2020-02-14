@@ -119,6 +119,10 @@ class bst
             }
         }
 
+        void erase(const KeyType& key){
+            
+        }
+
 
     
 
