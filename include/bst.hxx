@@ -15,48 +15,58 @@ class bst
         class Node;
         std::unique_ptr<Node> root;
     public:
-        Iterator iterator;
-        ConstIterator const_iterator;
-
-        CompareType compare();
 
         //Methods
 
         /**
          *  @brief Insert the node of given key
-         *  @param root Pointer to root node
          *  @param data Pair data to be inserted
+         *  @return a pair<iterator, bool>
          */ 
 
         // given the root and pair data, new node will be created if it doesn't exist in tree
-        std::pair<iterator, bool> insert(Node* root,std::pair<const KeyType, ValueType> &data){
-
-            // If there tree is empty, new node will be created and pointer to node and true will be returned
-            if (root == nullptr){
-                root = new Node(std::pair<const KeyType, ValueType> data);
-                return std::pair<iterator,bool> x(root, true);
-            }
+        std::pair<iterator, bool> insert(const std::pair<const KeyType, ValueType>& data){
             // If tree isn't empty, cur node will be created
-            else{
-                Node* cur;
-                // keyValue of data is smaller than root so it goes to left side of tree
-                if(compare(data.first,root->data().first)){                   // data.first < root.getData().first
-                    insert(root->left, data);
-                    root->left = cur;
+            Node * current = root.get();
+            
+            while(current)
+            {
+                if (comparator(data.first, current->data.first))
+                {
+                    if (!current->left)
+                    {
+                        current->left.reset(
+                            new Node{data, current}
+                        );
+                        iterator it = new iterator{current->left.get()};
+                        return new std::pair<iterator, bool>{it, true};
+                    }
+                    
+                    current = current->left.get();
                 }
-                // keyValue of data is larger than root so it goes to rigth side of tree
-                else if(!compare(data.first,root->data().first)){             // data.first > root.getData().first
-                    insert(root->rigth, data);
-                    root->rigth = cur;
+                else if (comparator(current->data.first, data.first)) 
+                {
+                    if(!current->right)
+                    {
+                        current->right.reset(
+                            new Node{data, current}
+                        );
+                        iterator it{current->right.get()};
+                        return new std::pair<iterator, bool>{it, true};
+                    }
+                    
+                    current = current->right.get();
+                } else {
+                    //the key already exists in the tree
+                    iterator it{current};
+                    return std::pair<iterator, bool>{it, false};
                 }
-                // Key is already presented in tree
-                else{                                                           // data.first == root.getData().first                       
-                    return std::pair<iterator,bool> x(cur, false); 
-                }
-
-                return std::pair<iterator,bool> x(cur, true);       
             }
-        
+            
+            //current is root and it's nullptr
+            current = new Node{data};
+            iterator it{current};
+            return std::pair<iterator, bool>{it, true};
         }      
 
         /**
@@ -85,21 +95,24 @@ class bst
          *  @brief Find the node of given key
          *  @param key The key value to be found in bst
          */
-        iterator find(KeyType key){
-            Node* cur = root;
+        iterator find(const KeyType& key){
+            Node * current = root.get();
             // until current equals to null pointer
-            while(cur){
-                    // given key is smaller than current go left
-                    if(compare(key,curr->data.first))
-                        cur = cur->left.get();
-                    // if  given key value is higher than current go right
-                    else if (!compare(key,curr->data.first)){
-                        cur = cut->right.get();
-                    }
+            while (current){
+                // given key is smaller than current go left
+                if(comparator(key, current->data.first))
+                {
+                    current = current->left.get();
+                }
+                else if (comparator(current->data.first, key))
+                {
+                    current = current->right.get();
+                }
+                else
+                {
                     // it is equal return current one
-                    else{
-                        return iterator(cur);
-                    }
+                    return iterator{current};
+                }
                 // key does not exist in tree
                 return end();
             }
@@ -109,7 +122,6 @@ class bst
     
 
         CompareType comparator;
-    public:
         class __iterator;
         using iterator = __iterator<Node>
         using const_iterator = __iterator<const Node>
