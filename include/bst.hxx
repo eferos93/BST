@@ -15,114 +15,8 @@ class bst
     private:
         class Node;
         std::unique_ptr<Node> root;
-    public:
-
-        //Methods
-
-        /**
-         *  @brief Insert the node of given key
-         *  @param data Pair data to be inserted
-         *  @return a pair<iterator, bool>
-         */ 
-
-        // given the root and pair data, new node will be created if it doesn't exist in tree
-        std::pair<iterator, bool> insert(const std::pair<const KeyType, ValueType>& data){
-            // If tree isn't empty, cur node will be created
-            Node * current = root.get();
-            
-            while(current)
-            {
-                if (comparator(data.first, current->data.first))
-                {
-                    if (!current->left)
-                    {
-                        current->left.reset(
-                            new Node{data, current}
-                        );
-                        iterator it = new iterator{current->left.get()};
-                        return new std::pair<iterator, bool>{it, true};
-                    }
-                    
-                    current = current->left.get();
-                }
-                else if (comparator(current->data.first, data.first)) 
-                {
-                    if(!current->right)
-                    {
-                        current->right.reset(
-                            new Node{data, current}
-                        );
-                        iterator it{current->right.get()};
-                        return new std::pair<iterator, bool>{it, true};
-                    }
-                    
-                    current = current->right.get();
-                } else {
-                    //the key already exists in the tree
-                    iterator it{current};
-                    return std::pair<iterator, bool>{it, false};
-                }
-            }
-            
-            //current is root and it's nullptr
-            current = new Node{data};
-            iterator it{current};
-            return std::pair<iterator, bool>{it, true};
-        }      
-
-        /**
-        *  @brief emplace given data to tree specified position
-        *  @param it Iterator which shows the place that data will be inserted
-        *  @param data data will be inserted
-        */
-        std::pair<iterator,bool> emplace(iterator it,std::pair<const KeyType, ValueType> &data){
-
-            //TO DO
-            insert(it, data);
-        /*  for emplacing data to tree, we specify the place (by using iterators) and data to be put os it is a inserting operation, 
-            if we give the parameters to the insert should it work? Becuase it is a pointer to node (in insert it will be considered as root)
-        */
-        /*
-        	I could not figure out what will happen if I tried to insert a data which doesn't follow the bst logic
-        */
-        }
-
-        /**
-         *  @brief Clears all the elements of the tree
-         */
-        void clear(); {root.reset();}
-
-        /**
-         *  @brief Find the node of given key
-         *  @param key The key value to be found in bst
-         */
-        iterator find(const KeyType& key){
-            Node * current = root.get();
-            // until current equals to null pointer
-            while (current){
-                // given key is smaller than current go left
-                if(comparator(key, current->data.first))
-                {
-                    current = current->left.get();
-                }
-                else if (comparator(current->data.first, key))
-                {
-                    current = current->right.get();
-                }
-                else
-                {
-                    // it is equal return current one
-                    return iterator{current};
-                }
-                // key does not exist in tree
-                return end();
-            }
-        }
-
-
-    
-
         CompareType comparator;
+    public:
         class __iterator;
         using iterator = __iterator<Node>
         using const_iterator = __iterator<const Node>
@@ -161,13 +55,13 @@ class bst
                 return new iterator{nullptr};
             }
 
-            Node * temp = root.get();
-            while (temp->left)
+            Node * current = root.get();
+            while (current->left)
             {
-                temp = temp->left.get();
+                current = current->left.get();
             }
             
-            return new iterator{temp};
+            return new iterator{current};
         }
 
         iterator end() { return new iterator{nullptr}; }
@@ -180,13 +74,13 @@ class bst
             {
                 return new const_iterator{nullptr};
             }
-            Node * temp = root.get();
-            while (temp->left)
+            Node * current = root.get();
+            while (current->left)
             {
-                temp = temp->left.get();
+                current = current->left.get();
             }
             
-            return new const_iterator{temp};
+            return new const_iterator{current};
         }
 
         const_iterator cend() const { return new const_iterator(nullptr); }
@@ -197,15 +91,188 @@ class bst
             {
                 return new const_iterator{nullptr};
             }
-            Node * temp = root.get();
-            while (temp->left)
+            Node * current = root.get();
+            while (current->left)
             {
-                temp = temp->left.get();
+                current = current->left.get();
             }
             
-            return new const_iterator{temp};
+            return new const_iterator{current};
         }
         
+                //Methods
+
+        /**
+         *  @brief Insert the node of given key
+         *  @param data Pair data to be inserted
+         *  @return a pair<iterator, bool>
+         */ 
+
+        std::pair<iterator, bool> insert(const std::pair<const KeyType, ValueType>& data){
+            // If tree isn't empty, cur node will be created
+            Node * current = root.get();
+            
+            while(current)
+            {
+                if (comparator(data.first, current->data.first))
+                {
+                    if (!current->left)
+                    {
+                        current->left = std::make_unique<Node>(
+                            new Node{data, current}
+                        );
+                        iterator it = new iterator{current->left.get()};
+                        return new std::pair<iterator, bool>{it, true};
+                    }
+                    
+                    current = current->left.get();
+                }
+                else if (comparator(current->data.first, data.first)) 
+                {
+                    if(!current->right)
+                    {
+                        current->right = std::make_unique<Node>(
+                            new Node{data, current}
+                        );
+                        iterator it{current->right.get()};
+                        return new std::pair<iterator, bool>{it, true};
+                    }
+                    
+                    current = current->right.get();
+                } else {
+                    //the key already exists in the tree
+                    iterator it{current};
+                    return std::pair<iterator, bool>{it, false};
+                }
+            }
+            
+            //current is root and it's nullptr
+            current = new Node{data};
+            iterator it{current};
+            return std::pair<iterator, bool>{it, true};
+        }      
+
+        std::pair<iterator, bool> insert(std::pair<const KeyType, ValueType>&& data)
+        {
+            // If tree isn't empty, cur node will be created
+            Node * current = root.get();
+            using pair_type = std::pair<const KeyType, ValueType>;
+            while(current)
+            {
+                if (comparator(data.first, current->data.first))
+                {
+                    if (!current->left)
+                    {
+                        current->left = std::make_unique<Node>(
+                            new Node{std::forward<pair_type>(data), current}
+                        );
+                        iterator it = new iterator{current->left.get()};
+                        return new std::pair<iterator, bool>{it, true};
+                    }
+                    
+                    current = current->left.get();
+                }
+                else if (comparator(current->data.first, data.first)) 
+                {
+                    if(!current->right)
+                    {
+                        current->right = std::make_unique<Node>(
+                            new Node{std::forward<pair_type>(data), current}
+                        );
+                        iterator it{current->right.get()};
+                        return new std::pair<iterator, bool>{it, true};
+                    }
+                    
+                    current = current->right.get();
+                } else {
+                    //the key already exists in the tree
+                    iterator it{current};
+                    return std::pair<iterator, bool>{it, false};
+                }
+            }
+            
+            //current is root and it's nullptr
+            current = new Node{std::forward<pair_type>(data)};
+            iterator it{current};
+            return std::pair<iterator, bool>{it, true};
+        }      
+
+        /**
+        *  @brief emplace given data to tree specified position
+        *  @param it Iterator which shows the place that data will be inserted
+        *  @param data data will be inserted
+        */
+        template<class... Types>
+        std::pair<iterator,bool> emplace(Types&&... args){
+
+            //TO DO
+            insert(it, data);
+        /*  for emplacing data to tree, we specify the place (by using iterators) and data to be put os it is a inserting operation, 
+            if we give the parameters to the insert should it work? Becuase it is a pointer to node (in insert it will be considered as root)
+        */
+        /*
+        	I could not figure out what will happen if I tried to insert a data which doesn't follow the bst logic
+        */
+        }
+
+        /**
+         *  @brief Clears all the elements of the tree
+         */
+        void clear(); { root.reset(); }
+
+        /**
+         *  @brief Find the node of given key
+         *  @param key The key value to be found in bst
+         */
+        iterator find(const KeyType& key){
+            Node * current = root.get();
+            // until current equals to null pointer
+            while (current
+            ){
+                // given key is smaller than current go left
+                if(comparator(key, current->data.first))
+                {
+                    current = current->left.get();
+                }
+                else if (comparator(current->data.first, key))
+                {
+                    current = current->right.get();
+                }
+                else
+                {
+                    // it is equal return current one
+                    return iterator{current};
+                }
+                // key does not exist in tree
+                return end();
+            }
+        }
+
+        const_iterator find(const KeyType& key) const
+        {
+            Node * current = root.get();
+            // until current equals to null pointer
+            while (current)
+            {
+                // given key is smaller than current go left
+                if(comparator(key, current->data.first))
+                {
+                    current = current->left.get();
+                }
+                else if (comparator(current->data.first, key))
+                {
+                    current = current->right.get();
+                }
+                else
+                {
+                    // it is equal return current one
+                    return const_iterator{current};
+                }
+                // key does not exist in tree
+                return end();
+            }
+        }
+
         void copy(const std::unique_ptr<Node> node)
         {
             if (node)
@@ -218,40 +285,41 @@ class bst
 
         ValueType& operator[](const KeyType& key) noexcept
         {
-            Node * temp = root.get();
-            while (temp)
+            Node * current = root.get();
+
+            while (current)
             {
-                if (comparator(key, temp->data.first))
+                if (comparator(key, current->data.first))
                 {
-                    if (!temp->left)
+                    if (!current->left)
                     {
                         auto pair = new std::pair<KeyType, ValueType>{key, new ValueType{}};
-                        temp->left = new Node<KeyType,ValueType,CompareType>{pair, temp};
-                        return temp->left.get()->data.right;
+                        current->left = new Node<KeyType,ValueType,CompareType>{pair, current};
+                        return current->left.get()->data.right;
                     }
                     else
                     {
-                        temp = temp->left.get();
+                        current = current->left.get();
                     }
                 } 
-                else if(comparator(temp->data.first, key))
+                else if(comparator(current->data.first, key))
                 {
                     
-                    if (!temp->right)
+                    if (!current->right)
                     {
                         auto pair = new std::pair<KeyType, ValueType>{key, new ValueType{}};
-                        temp->right = new Node<KeyType,ValueType,CompareType>{pair, temp};
-                        return temp->right.get()->data.right;
+                        current->right = new Node<KeyType,ValueType,CompareType>{pair, current};
+                        return current->right.get()->data.right;
                     }
                     else
                     {
-                        temp = temp->right.get();
+                        current = current->right.get();
                     }
                     
                 }
                 else
                 {
-                     return temp->data.right;
+                     return current->data.right;
                 }
                 
             }
@@ -260,40 +328,45 @@ class bst
 
         ValueType& operator[](KeyType&& key) noexcept
         {
-            Node * temp = root.get();
-            while (temp)
+            Node * current = root.get();
+            while (current)
             {
-                if (comparator(std::forward(key), temp->data.first))
+                if (comparator(std::forward<KeyType>(key), current->data.first))
                 {
-                    if (!temp->left)
+                    if (!current->left)
                     {
-                        auto pair = new std::pair<KeyType, ValueType>{std::forward(key), ValueType{}};
-                        temp->left = new Node<KeyType,ValueType,CompareType>{pair, temp};
-                        return temp->left.get()->data.right;
+                        auto pair = new std::pair<KeyType, ValueType>{
+                            std::forward<KeyType>(key), ValueType{}
+                        };
+                        current->left = std::make_unique<Node>(new Node{pair, current});
+                        return current->left.get()->data.right;
                     }
                     else
                     {
-                        temp = temp->left.get();
+                        current = current->left.get();
                     }
                 } 
-                else if(comparator(temp->data.first, std::forward(key)))
+                else if(comparator(current->data.first, std::forward<KeyType>(key)))
                 {
                     
-                    if (!temp->right)
+                    if (!current->right)
                     {
-                        auto pair = new std::pair<KeyType, ValueType>{std::forward(key), ValueType{}};
-                        temp->right = new Node<KeyType,ValueType,CompareType>{pair, temp};
-                        return temp->right.get()->data.right;
+                        auto pair = new std::pair<KeyType, ValueType>{
+                            std::forward<KeyType>(key), ValueType{}
+                        };
+                        current->right = std::make_unique<Node>(new Node{pair, current});
+                        return current->right.get()->data.right;
                     }
                     else
                     {
-                        temp = temp->right.get();
+                        current = current->right.get();
                     }
                     
                 }
                 else
                 {
-                     return temp->data.right;
+                    //element found
+                     return current->data.right;
                 }
                 
             }
@@ -302,12 +375,12 @@ class bst
 
         friend std::ostream& operator<<(std::ostream& os, const bst& x)
         {
-            iterator temp = begin();
+            iterator current = begin();
             iterator end = end();
-            while (temp!=end)
+            while (current!=end)
             {
-                os << (*temp).right << " "
-                ++temp;
+                os << (*current).right << " "
+                ++current;
             }
             return os;
         }
