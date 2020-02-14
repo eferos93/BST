@@ -1,6 +1,6 @@
 /**
  * bst.hxx file
- * @authors: Eros Fabrici, ... , ....
+ * @authors: Eros Fabrici, Dogan Can Demirbilek , ....
  **/
 #include <iostream>
 #include <utility>
@@ -215,6 +215,8 @@ class bst
         */
         }
 
+
+
         /**
          *  @brief Clears all the elements of the tree
          */
@@ -248,6 +250,62 @@ class bst
             }
         }
 
+        /**
+        *  @brief Helping function to find min node in given root
+        *  @param root pointer to root of tree
+        */ 
+
+        iterator min(Node * root){
+            while(root->left != nullptr)
+                root = root->left;
+            return iterator{root};
+        }
+
+        /**
+        *  @brief Helping function to find max node in given root
+        *  @param root pointer to root of tree
+        */ 
+
+        iterator max(Node * root){
+            while(root->right != nullptr)
+                root = root->right;
+            return iterator{root};
+        }
+
+        /**
+        *  @brief Erasing given element from the tree
+        *  @param key key value that will be deleted from tree
+        */ 
+
+        void erase(const KeyType& key){
+
+            iterator it{find(key)};
+    
+            if(it == nullptr){
+                std::cout << "The key is not in tree\n";
+            }
+            else{
+                // to protect the structure of tree min of right side of subtree (right side of will be deleted node ) 
+                if(it->right){
+                    iterator min{min(it->right)};
+                    it = min;
+                    min.release(); 
+                }
+                // it has only left child so to protect the structure of tree max of left side of subtree
+                else if(it->left){
+                    iterator max{max(it->left)}  
+                    it = max;
+                    max.relase();                    
+                }
+                // leaf (it has not children) can be deleted without problem
+                else{
+                    it.release();
+                }                
+                
+            }
+            
+        }
+
         const_iterator find(const KeyType& key) const
         {
             Node * current = root.get();
@@ -273,7 +331,7 @@ class bst
             }
         }
 
-        
+
 
         void copy(const std::unique_ptr<Node> node)
         {
