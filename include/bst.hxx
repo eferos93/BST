@@ -16,6 +16,77 @@ class bst
         class Node;
         std::unique_ptr<Node> root;
         CompareType comparator;
+
+        /**
+         * @brief Given a node in a tree, returns its successor
+         * @param node A pointer to a node
+         * @return Pointer to node's successor
+         */
+        Node * successor(Node * node)
+        {
+            if (node->right)
+            {
+                return minimun(node->right.get());
+            }
+
+            Node * p = node->parent;
+            
+            while (p && node == p->right.get())
+            {
+                node = p;
+                p = p->parent;
+            }
+
+            return p;
+        }
+
+        /**
+         * @brief Given a pointer to a node, find the minimum in the sub-tree
+         * with node as root
+         * @param node Pointer to a node
+         * @return Pointer to a node which is the minimum of the sub-tree rooted
+         * in node
+         */
+        Node * minimun(Node * node)
+        {
+            if (node == root.get())
+            {
+                return begin
+            }
+            while (node)
+            {
+                node = node->left.get();
+            }
+            return node;
+        }
+
+        /**
+         * @brief Replaces the subtree rooted at node a, with the subtree rooted
+         * at node b
+         * @param a A pointer to a Node
+         * @param b A pointer to a Node
+         */
+        void transplant(Node * a, Node * b)
+        {
+            if (!u->parent)
+            {
+                root.reset(b);
+            }
+            else if (a == a->parent->left.get())
+            {
+                a->parent->left.reset(b);
+            }
+            else
+            {
+                a->parent->right.reset(b);
+            }
+
+            if (b)
+            {
+                v->parent = u->parent;
+            }
+        }
+
     public:
         class __iterator;
         using iterator = __iterator<Node>
@@ -199,13 +270,13 @@ class bst
 
         /**
         *  @brief emplace given data to tree specified position
-        *  @param it Iterator which shows the place that data will be inserted
-        *  @param data data will be inserted
+        *  @param args The data to be inserted
+        *  @return A pair (iterator, bool)
         */
         template<class... Types>
         std::pair<iterator, bool> emplace(Types&&... args)
         {
-            return insert(std::pair<KeyType, ValueType>{std::forward<Types>(args)});
+            return insert(std::pair<const KeyType, ValueType>{std::forward<Types>(args)...});
         }
 
         /**
@@ -282,6 +353,37 @@ class bst
                 copy(node->left);
                 copy(node->right);
             }
+        }
+
+        /**
+         * @brief given a key, find the node and delete the node
+         * @param key The key of the node to be found and deleted
+         */
+        void erase(const KeyType& key)
+        {
+            Node * node = find(key).current;
+            if (!node->left)
+            {
+                transplant(node, node->right.get());
+            }
+            else if (!node->right)
+            {
+                transplant(node, node->left.get());
+            }
+            else
+            {
+                Node * temp = minimum(node->right.get());
+                if (temp->parent != node)
+                {
+                    transplant(temp, temp->right.get());
+                    temp->right.reset(node->right.get());
+                    temp->right->parent = temp;
+                }
+                transplant(node, temp);
+                temp->left.reset(node->left.get());
+                temp->left->parent = temp;
+            }
+            
         }
 
         ValueType& operator[](const KeyType& key) noexcept
