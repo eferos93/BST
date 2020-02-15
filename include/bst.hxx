@@ -205,14 +205,6 @@ class bst
         template<class... Types>
         std::pair<iterator,bool> emplace(Types&&... args){
 
-            //TO DO
-            insert(it, data);
-        /*  for emplacing data to tree, we specify the place (by using iterators) and data to be put os it is a inserting operation, 
-            if we give the parameters to the insert should it work? Becuase it is a pointer to node (in insert it will be considered as root)
-        */
-        /*
-        	I could not figure out what will happen if I tried to insert a data which doesn't follow the bst logic
-        */
         }
 
 
@@ -305,6 +297,8 @@ class bst
             }
             
         }
+
+        
 
         const_iterator find(const KeyType& key) const
         {
