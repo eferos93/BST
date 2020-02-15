@@ -15,7 +15,6 @@ class bst
     private:
         class Node;
         std::unique_ptr<Node> root;
-        CompareType comparator;
 
         /**
          * @brief Given a node in a tree, returns its successor
@@ -88,9 +87,9 @@ class bst
         }
 
     public:
-        class __iterator;
-        using iterator = __iterator;
-        using const_iterator = __iterator;
+        CompareType comparator;
+        class iterator;
+        class const_iterator;
         /**
          * @brief Default constructor
          */
@@ -102,7 +101,7 @@ class bst
          * @param c The instance of the CompareType
          */
         bst(std::pair<KeyType, ValueType>& data, CompareType c = CompareType{}):
-                root{new Node{data}}, comparator{c} {}
+                root{Node{data}}, comparator{c} {}
         
         /**
          * @brief copy constructor
@@ -119,11 +118,11 @@ class bst
         bst(bst&& bst) noexcept : 
             root{std::move(bst.root)} {}
 
-        iterator begin()
+        iterator begin() const
         {
             if(!root)
             {
-                return new iterator{nullptr};
+                return iterator{nullptr};
             }
 
             Node * current = root.get();
@@ -132,18 +131,18 @@ class bst
                 current = current->left.get();
             }
             
-            return new iterator{current};
+            return iterator{current};
         }
 
-        iterator end() { return new iterator{nullptr}; }
+        iterator end() const { return iterator{nullptr}; }
 
-        const_iterator end() { return new const_iterator{nullptr}; }
+        //const_iterator end() { return const_iterator{nullptr}; }
 
         const_iterator cbegin() const
         {
             if(!root)
             {
-                return new const_iterator{nullptr};
+                return const_iterator{nullptr};
             }
             Node * current = root.get();
             while (current->left)
@@ -151,16 +150,16 @@ class bst
                 current = current->left.get();
             }
             
-            return new const_iterator{current};
+            return const_iterator{current};
         }
 
-        const_iterator cend() const { return new const_iterator(nullptr); }
-
+        const_iterator cend() const { return const_iterator(nullptr); }
+        /*
         const_iterator begin() const 
         {
             if(!root)
             {
-                return new const_iterator{nullptr};
+                return const_iterator{nullptr};
             }
             Node * current = root.get();
             while (current->left)
@@ -168,9 +167,9 @@ class bst
                 current = current->left.get();
             }
             
-            return new const_iterator{current};
+            return const_iterator{current};
         }
-        
+        */
                 //Methods
 
         /**
@@ -190,10 +189,10 @@ class bst
                     if (!current->left)
                     {
                         current->left = std::make_unique<Node>(
-                            new Node{data, current}
+                            Node{data, current}
                         );
-                        iterator it = new iterator{current->left.get()};
-                        return new std::pair<iterator, bool>{it, true};
+                        iterator it = iterator{current->left.get()};
+                        return std::pair<iterator, bool>{it, true};
                     }
                     
                     current = current->left.get();
@@ -203,10 +202,10 @@ class bst
                     if(!current->right)
                     {
                         current->right = std::make_unique<Node>(
-                            new Node{data, current}
+                            Node{data, current}
                         );
                         iterator it{current->right.get()};
-                        return new std::pair<iterator, bool>{it, true};
+                        return std::pair<iterator, bool>{it, true};
                     }
                     
                     current = current->right.get();
@@ -218,7 +217,7 @@ class bst
             }
             
             //current is root and it's nullptr
-            current = new Node{data};
+            current = Node{data};
             iterator it{current};
             return std::pair<iterator, bool>{it, true};
         }      
@@ -235,10 +234,10 @@ class bst
                     if (!current->left)
                     {
                         current->left = std::make_unique<Node>(
-                            new Node{std::forward<pair_type>(data), current}
+                            Node{std::forward<pair_type>(data), current}
                         );
-                        iterator it = new iterator{current->left.get()};
-                        return new std::pair<iterator, bool>{it, true};
+                        iterator it = iterator{current->left.get()};
+                        return std::pair<iterator, bool>{it, true};
                     }
                     
                     current = current->left.get();
@@ -248,10 +247,10 @@ class bst
                     if(!current->right)
                     {
                         current->right = std::make_unique<Node>(
-                            new Node{std::forward<pair_type>(data), current}
+                            Node{std::forward<pair_type>(data), current}
                         );
                         iterator it{current->right.get()};
-                        return new std::pair<iterator, bool>{it, true};
+                        return std::pair<iterator, bool>{it, true};
                     }
                     
                     current = current->right.get();
@@ -263,7 +262,7 @@ class bst
             }
             
             //current is root and it's nullptr
-            current = new Node{std::forward<pair_type>(data)};
+            current = Node{std::forward<pair_type>(data)};
             iterator it{current};
             return std::pair<iterator, bool>{it, true};
         }      
@@ -396,8 +395,8 @@ class bst
                 {
                     if (!current->left)
                     {
-                        auto pair = new std::pair<KeyType, ValueType>{key, new ValueType{}};
-                        current->left = new Node{pair, current};
+                        auto pair = std::pair<KeyType, ValueType>{key, ValueType{}};
+                        current->left = Node{pair, current};
                         return current->left.get()->data.right;
                     }
                     else
@@ -410,7 +409,7 @@ class bst
                     
                     if (!current->right)
                     {
-                        auto pair = new std::pair<KeyType, ValueType>{key, ValueType{}};
+                        auto pair = std::pair<KeyType, ValueType>{key, ValueType{}};
                         current->right = Node{pair, current};
                         return current->right.get()->data.right;
                     }

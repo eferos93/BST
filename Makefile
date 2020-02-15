@@ -4,7 +4,7 @@ DEFINES = NONE # PTREE for tree printing
 CXX = c++
 TESTSRC = src/main.cpp
 #BENCHSRC = test/BinarySearchTreeBenchmark.cpp
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -std=c++14 -Wall -Wextra
 IFLAGS = -I include
 DFLAGS = -D $(DEFINES)
 

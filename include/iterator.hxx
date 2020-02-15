@@ -1,26 +1,21 @@
 
-#include <iterator>
 
 template<class KeyType, class ValueType, class CompareType>
-class bst<KeyType, ValueType, CompareType>::__iterator 
+class bst<KeyType, ValueType, CompareType>::iterator 
 {
-    using Node = typename bst<KeyType, ValueType, CompareType>::Node;
+    friend class bst;
+    using Node = bst<KeyType, ValueType, CompareType>::Node;
     Node * current;
 
     public:
-        //using value_type = V;
-        using difference_type = std::ptrdiff_t;
-        using iterator_type = std::forward_iterator_tag;
-        //using reference = value_type&;
-        //using pointer = value_type*;
 
-        explicit __iterator(Node * node): current{node} {}
+        explicit iterator(Node * node): current{node} {}
 
         /**
          * @brief Operator *iter
          * @return A reference to the tuple (keytype, valuetype)
          */
-        std::pair<KeyType, ValueType>& operator*() const noexcept
+        std::pair<const KeyType, ValueType>& operator*() const noexcept
         {
             //return current.getData();
             return current->data;
@@ -36,7 +31,7 @@ class bst<KeyType, ValueType, CompareType>::__iterator
          * traversal
          * @return Iterator& Reference to this iterator with updated state
          */
-        __iterator& operator++()
+        iterator& operator++()
         {
             if (!current)
             {
@@ -68,9 +63,9 @@ class bst<KeyType, ValueType, CompareType>::__iterator
          * @brief it++ for iterating to the next node
          * @return Iterator value before advancing to the next node
          */
-        __iterator operator++() noexcept
+        iterator operator++() noexcept
         {
-            __iterator iter{*this};
+            iterator iter{*this};
             ++(*this);
             return iter;
         }
@@ -82,7 +77,7 @@ class bst<KeyType, ValueType, CompareType>::__iterator
          * @param right iterator on the right-hand side.
          * @return Bool: true if they point to the same node, false otherwise
          */
-        friend bool operator==(const __iterator& left, const __iterator& right) noexcept
+        friend bool operator==(const iterator& left, const iterator& right) noexcept
         {
             return left.current == right.current;
         }
@@ -94,8 +89,35 @@ class bst<KeyType, ValueType, CompareType>::__iterator
          * @param right iterator on the right-hand side.
          * @return True if they are not equal, true othersise.
          */
-        friend bool operator!=(const __iterator& left, const __iterator& right) noexcept
+        friend bool operator!=(const iterator& left, const iterator& right) noexcept
         {
             return left.current != right.current;
         }
+};
+
+template<class KeyType, class ValueType, class CompareType>
+class bst<KeyType,ValueType, CompareType>::const_iterator : 
+public bst<KeyType,ValueType, CompareType>::iterator
+{
+	/** Used to give access to getNode method */
+	friend class bst;
+	/** Alias to make names shorter and intuitive*/
+	using iterator = bst<KeyType,ValueType, CompareType>::iterator;
+private:
+	/**
+	 * @brief Returns a constant pointer to the node pointed to by the iterator.
+	 */
+	//const Node * getNode() const { return Iterator::getNode(); }
+public:
+	/** Uses the same method of the base class. */
+	using iterator::iterator;
+	/**
+	 * @brief Operator it() for deferencing a binary search tree iterator.
+	 * @return const std::pair<TKey, TValue>& Constant reference to current 
+	 * node's data in key, value format.
+	 */
+	const std::pair<const KeyType, ValueType>& operator*() const 
+    { 
+        return iterator::operator*(); 
+    }
 };
