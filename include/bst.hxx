@@ -420,7 +420,7 @@ class bst
         }
 
         /**
-         *  @brief 
+         *  @brief function that balance the tree
          */ 
 
         void balance(){
