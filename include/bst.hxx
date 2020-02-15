@@ -311,67 +311,7 @@ class bst
                 // key does not exist in tree
                 return end();
             }
-        }
-
-        /**
-        *  @brief Helping function to find min node in given root
-        *  @param root pointer to root of tree
-        */ 
-
-        iterator min(Node * root){
-            while(root->left != nullptr)
-                root = root->left;
-            return iterator{root};
-        }
-
-        /**
-        *  @brief Helping function to find max node in given root
-        *  @param root pointer to root of tree
-        */ 
-
-        iterator max(Node * root){
-            while(root->right != nullptr)
-                root = root->right;
-            return iterator{root};
-        }
-
-        /**
-        *  @brief Erasing given element from the tree
-        *  @param key key value that will be deleted from tree
-        */ 
-
-        void erase(const KeyType& key){
-
-            iterator it{find(key)};
-    
-            if(it == nullptr){
-                std::cout << "The key is not in tree\n";
-            }
-            else{
-                // to protect the structure of tree min of right side of subtree (right side of will be deleted node ) 
-                if(it->right){
-                    iterator min{min(it->right)};
-                    it = min;
-                    min.release(); 
-                }
-                // it has only left child so to protect the structure of tree max of left side of subtree
-                else if(it->left){
-                    iterator max{max(it->left)}  
-                    it = max;
-                    max.relase();                    
-                }
-                // leaf (it has not children) can be deleted without problem
-                else{
-                    it.release();
-                }                
-                
-            }
-            
-        }
-
-
-
-        
+        }      
 
         const_iterator find(const KeyType& key) const
         {
@@ -439,6 +379,58 @@ class bst
                 temp->left->parent = temp;
             }
             
+        }
+        /**
+         *  @brief auxiliary recursive function to store nodes
+         *  @param nodes vector to store the nodes
+         */ 
+
+        void storeBSTNodes(Node* root,std::vector<Node*> &nodes){
+            // Base case
+            if (root)
+            {
+                return;
+            }
+            // Store node inorder
+            storeBSTNodes(root->left, nodes);
+            nodes.push_back(root);
+            storeBSTNodes(root-right, nodes);
+            
+        }
+
+        /**
+         *  @brief auxiliary recursive function to build a bst
+         *  @param nodes containers of nodes
+         *  @param start beginning position
+         *  @param end ending position
+         */ 
+
+        void buildTree(std::vector<Node*> &nodes, int start, int end){
+            if(start>end)
+                return;
+            // Get the middle element
+            int mid = (start + end) / 2;
+            Node *root = nodes[mid];
+            
+            root->left = buildTree(nodes,start,mid-1);
+            root->right = buildTree(nodes, mid+1, end);
+
+            return root;
+
+        }
+
+        /**
+         *  @brief 
+         */ 
+
+        void balance(){
+            std::vector<Node *> nodes;
+            storeBSTNodes(root,nodes);
+
+            //Construct BST from nodes
+            int n = nodes.size();
+            buildTree(nodes,0,n-1);
+
         }
 
         ValueType& operator[](const KeyType& key) noexcept
