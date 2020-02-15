@@ -51,7 +51,7 @@ class bst
         {
             if (node == root.get())
             {
-                return begin
+                return begin;
             }
             while (node)
             {
@@ -68,7 +68,7 @@ class bst
          */
         void transplant(Node * a, Node * b)
         {
-            if (!u->parent)
+            if (!a->parent)
             {
                 root.reset(b);
             }
@@ -83,14 +83,14 @@ class bst
 
             if (b)
             {
-                v->parent = u->parent;
+                b->parent = a->parent;
             }
         }
 
     public:
         class __iterator;
-        using iterator = __iterator<Node>
-        using const_iterator = __iterator<const Node>
+        using iterator = __iterator;
+        using const_iterator = __iterator;
         /**
          * @brief Default constructor
          */
@@ -397,7 +397,7 @@ class bst
                     if (!current->left)
                     {
                         auto pair = new std::pair<KeyType, ValueType>{key, new ValueType{}};
-                        current->left = new Node<KeyType,ValueType,CompareType>{pair, current};
+                        current->left = new Node{pair, current};
                         return current->left.get()->data.right;
                     }
                     else
@@ -410,8 +410,8 @@ class bst
                     
                     if (!current->right)
                     {
-                        auto pair = new std::pair<KeyType, ValueType>{key, new ValueType{}};
-                        current->right = new Node<KeyType,ValueType,CompareType>{pair, current};
+                        auto pair = new std::pair<KeyType, ValueType>{key, ValueType{}};
+                        current->right = Node{pair, current};
                         return current->right.get()->data.right;
                     }
                     else
@@ -438,10 +438,10 @@ class bst
                 {
                     if (!current->left)
                     {
-                        auto pair = new std::pair<KeyType, ValueType>{
+                        auto pair = std::pair<KeyType, ValueType>{
                             std::forward<KeyType>(key), ValueType{}
                         };
-                        current->left = std::make_unique<Node>(new Node{pair, current});
+                        current->left = std::make_unique<Node>(Node{pair, current});
                         return current->left.get()->data.right;
                     }
                     else
@@ -454,10 +454,10 @@ class bst
                     
                     if (!current->right)
                     {
-                        auto pair = new std::pair<KeyType, ValueType>{
+                        auto pair = std::pair<KeyType, ValueType>{
                             std::forward<KeyType>(key), ValueType{}
                         };
-                        current->right = std::make_unique<Node>(new Node{pair, current});
+                        current->right = std::make_unique<Node>(Node{pair, current});
                         return current->right.get()->data.right;
                     }
                     else
@@ -478,12 +478,12 @@ class bst
 
         friend std::ostream& operator<<(std::ostream& os, const bst& x)
         {
-            iterator current = begin();
-            iterator end = end();
+            iterator current = x.begin();
+            iterator end = x.end();
             while (current!=end)
             {
-                os << (*current).right << " "
-                ++current;
+                os << (*current).second << " "
+                ++(current);
             }
             return os;
         }

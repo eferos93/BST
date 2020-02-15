@@ -1,23 +1,21 @@
-CXX		  := g++
-CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb
+TEST = test.o
+#BENCHMARK = benchmark.o
+DEFINES = NONE # PTREE for tree printing
+CXX = c++
+TESTSRC = src/main.cpp
+#BENCHSRC = test/BinarySearchTreeBenchmark.cpp
+CXXFLAGS = -std=c++17 -Wall -Wextra
+IFLAGS = -I include
+DFLAGS = -D $(DEFINES)
 
-BIN		:= bin
-SRC		:= src
-INCLUDE	:= include
-LIB		:= lib
+all: $(TEST)
 
-LIBRARIES	:=
-EXECUTABLE	:= main
+$(TEST): $(TESTSRC)
+	$(CXX) -g $< -o $(TEST) $(CXXFLAGS) $(IFLAGS) $(DFLAGS)
 
+#$(BENCHMARK): $(BENCHSRC)
+#	$(CXX) -g $< -o $(BENCHMARK) $(CXXFLAGS) $(IFLAGS) $(DFLAGS)
+clean: 
+	@rm -fr *.o docs/html docs/latex
 
-all: $(BIN)/$(EXECUTABLE)
-
-run: clean all
-	clear
-	./$(BIN)/$(EXECUTABLE)
-
-$(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
-	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
-
-clean:
-	-rm $(BIN)/*
+.PHONY: all docs clean

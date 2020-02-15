@@ -2,7 +2,6 @@
 #include <iterator>
 
 template<class KeyType, class ValueType, class CompareType>
-template<class V>
 class bst<KeyType, ValueType, CompareType>::__iterator 
 {
     using Node = typename bst<KeyType, ValueType, CompareType>::Node;
@@ -83,7 +82,7 @@ class bst<KeyType, ValueType, CompareType>::__iterator
          * @param right iterator on the right-hand side.
          * @return Bool: true if they point to the same node, false otherwise
          */
-        friend bool opearator==(const __iterator& left, const __iterator& right) noexcept
+        friend bool operator==(const __iterator& left, const __iterator& right) noexcept
         {
             return left.current == right.current;
         }
@@ -97,6 +96,6 @@ class bst<KeyType, ValueType, CompareType>::__iterator
          */
         friend bool operator!=(const __iterator& left, const __iterator& right) noexcept
         {
-            return !(left == right);
+            return left.current != right.current;
         }
 };
