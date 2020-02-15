@@ -203,10 +203,10 @@ class bst
         *  @param data data will be inserted
         */
         template<class... Types>
-        std::pair<iterator,bool> emplace(Types&&... args){
-
+        std::pair<iterator,bool> emplace(Types&&... args)
+        {
+            return insert(std::pair<KeyType, ValueType>{std::forward<Types>(args)});
         }
-
 
 
         /**
@@ -221,8 +221,8 @@ class bst
         iterator find(const KeyType& key){
             Node * current = root.get();
             // until current equals to null pointer
-            while (current
-            ){
+            while(current)
+            {
                 // given key is smaller than current go left
                 if(comparator(key, current->data.first))
                 {
