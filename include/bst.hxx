@@ -5,6 +5,7 @@
 #include <iostream>
 #include <utility>
 #include <memory>
+#include <vector>
 
 #ifndef BST_HXX__
 #define BST_HXX__
@@ -415,8 +416,6 @@ class bst
             root->left = buildTree(nodes,start,mid-1);
             root->right = buildTree(nodes, mid+1, end);
 
-            return root;
-
         }
 
         /**
@@ -424,6 +423,7 @@ class bst
          */ 
 
         void balance(){
+
             std::vector<Node *> nodes;
             storeBSTNodes(root,nodes);
 
