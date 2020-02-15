@@ -298,13 +298,15 @@ class bst
             
         }
 
+
+
         
 
         const_iterator find(const KeyType& key) const
         {
             Node * current = root.get();
             // until current equals to null pointer
-            while (current)
+            while(current)
             {
                 // given key is smaller than current go left
                 if(comparator(key, current->data.first))
