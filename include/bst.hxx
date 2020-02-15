@@ -1,6 +1,6 @@
 /**
  * bst.hxx file
- * @authors: Eros Fabrici, ... , ....
+ * @authors: Eros Fabrici, Dogan Can Demirbilek , ....
  **/
 #include <iostream>
 #include <utility>
@@ -157,7 +157,7 @@ class bst
             // If tree isn't empty, cur node will be created
             Node * current = root.get();
             using pair_type = std::pair<const KeyType, ValueType>;
-            while (current)
+            while(current)
             {
                 if (comparator(data.first, current->data.first))
                 {
@@ -203,26 +203,34 @@ class bst
         *  @param data data will be inserted
         */
         template<class... Types>
-        std::pair<iterator, bool> emplace(Types&&... args)
-        {
-            return insert(std::pair<KeyType, ValueType>{std::forward<Types>(args)});
+        std::pair<iterator,bool> emplace(Types&&... args){
+
+            //TO DO
+            insert(it, data);
+        /*  for emplacing data to tree, we specify the place (by using iterators) and data to be put os it is a inserting operation, 
+            if we give the parameters to the insert should it work? Becuase it is a pointer to node (in insert it will be considered as root)
+        */
+        /*
+        	I could not figure out what will happen if I tried to insert a data which doesn't follow the bst logic
+        */
         }
+
+
 
         /**
          *  @brief Clears all the elements of the tree
          */
-        void clear() { root.reset(); }
+        void clear(); { root.reset(); }
 
         /**
          *  @brief Find the node of given key
          *  @param key The key value to be found in bst
          */
-        iterator find(const KeyType& key)
-        {
+        iterator find(const KeyType& key){
             Node * current = root.get();
             // until current equals to null pointer
-            while (current)
-            {
+            while (current
+            ){
                 // given key is smaller than current go left
                 if(comparator(key, current->data.first))
                 {
@@ -237,17 +245,67 @@ class bst
                     // it is equal return current one
                     return iterator{current};
                 }
-            }
-
-             // key does not exist in tree
+                // key does not exist in tree
                 return end();
+            }
         }
 
         /**
-         * @brief Method that given a key, searches for the element inside the bst
-         * @param key The key to be searched
-         * @return Return a const_iterator containing a pointer to the found node
-         */
+        *  @brief Helping function to find min node in given root
+        *  @param root pointer to root of tree
+        */ 
+
+        iterator min(Node * root){
+            while(root->left != nullptr)
+                root = root->left;
+            return iterator{root};
+        }
+
+        /**
+        *  @brief Helping function to find max node in given root
+        *  @param root pointer to root of tree
+        */ 
+
+        iterator max(Node * root){
+            while(root->right != nullptr)
+                root = root->right;
+            return iterator{root};
+        }
+
+        /**
+        *  @brief Erasing given element from the tree
+        *  @param key key value that will be deleted from tree
+        */ 
+
+        void erase(const KeyType& key){
+
+            iterator it{find(key)};
+    
+            if(it == nullptr){
+                std::cout << "The key is not in tree\n";
+            }
+            else{
+                // to protect the structure of tree min of right side of subtree (right side of will be deleted node ) 
+                if(it->right){
+                    iterator min{min(it->right)};
+                    it = min;
+                    min.release(); 
+                }
+                // it has only left child so to protect the structure of tree max of left side of subtree
+                else if(it->left){
+                    iterator max{max(it->left)}  
+                    it = max;
+                    max.relase();                    
+                }
+                // leaf (it has not children) can be deleted without problem
+                else{
+                    it.release();
+                }                
+                
+            }
+            
+        }
+
         const_iterator find(const KeyType& key) const
         {
             Node * current = root.get();
@@ -268,13 +326,12 @@ class bst
                     // it is equal return current one
                     return const_iterator{current};
                 }
+                // key does not exist in tree
+                return end();
             }
-
-            // key does not exist in tree
-            return end();
         }
 
-        
+
 
         void copy(const std::unique_ptr<Node> node)
         {
