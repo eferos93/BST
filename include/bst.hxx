@@ -157,7 +157,7 @@ class bst
             // If tree isn't empty, cur node will be created
             Node * current = root.get();
             using pair_type = std::pair<const KeyType, ValueType>;
-            while(current)
+            while (current)
             {
                 if (comparator(data.first, current->data.first))
                 {
@@ -203,32 +203,26 @@ class bst
         *  @param data data will be inserted
         */
         template<class... Types>
-        std::pair<iterator,bool> emplace(Types&&... args){
-
-            //TO DO
-            insert(it, data);
-        /*  for emplacing data to tree, we specify the place (by using iterators) and data to be put os it is a inserting operation, 
-            if we give the parameters to the insert should it work? Becuase it is a pointer to node (in insert it will be considered as root)
-        */
-        /*
-        	I could not figure out what will happen if I tried to insert a data which doesn't follow the bst logic
-        */
+        std::pair<iterator, bool> emplace(Types&&... args)
+        {
+            return insert(std::pair<KeyType, ValueType>{std::forward<Types>(args)});
         }
 
         /**
          *  @brief Clears all the elements of the tree
          */
-        void clear(); { root.reset(); }
+        void clear() { root.reset(); }
 
         /**
          *  @brief Find the node of given key
          *  @param key The key value to be found in bst
          */
-        iterator find(const KeyType& key){
+        iterator find(const KeyType& key)
+        {
             Node * current = root.get();
             // until current equals to null pointer
-            while (current
-            ){
+            while (current)
+            {
                 // given key is smaller than current go left
                 if(comparator(key, current->data.first))
                 {
@@ -243,11 +237,17 @@ class bst
                     // it is equal return current one
                     return iterator{current};
                 }
-                // key does not exist in tree
-                return end();
             }
+
+             // key does not exist in tree
+                return end();
         }
 
+        /**
+         * @brief Method that given a key, searches for the element inside the bst
+         * @param key The key to be searched
+         * @return Return a const_iterator containing a pointer to the found node
+         */
         const_iterator find(const KeyType& key) const
         {
             Node * current = root.get();
@@ -268,9 +268,10 @@ class bst
                     // it is equal return current one
                     return const_iterator{current};
                 }
-                // key does not exist in tree
-                return end();
             }
+
+            // key does not exist in tree
+            return end();
         }
 
         
