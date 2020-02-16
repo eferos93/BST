@@ -16,7 +16,6 @@ class bst
     private:
         class Node;
         std::unique_ptr<Node> root;
-
         /**
          * @brief Given a node in a tree, returns its successor
          * @param node A pointer to a node
@@ -47,11 +46,11 @@ class bst
          * @return Pointer to a node which is the minimum of the sub-tree rooted
          * in node
          */
-        Node * minimun(Node * node)
+        Node * minimum(Node * node)
         {
             if (node == root.get())
             {
-                return begin;
+                return begin().current;
             }
             while (node)
             {
@@ -74,10 +73,12 @@ class bst
             }
             else if (a == a->parent->left.get())
             {
+                //a it's left son of its parent
                 a->parent->left.reset(b);
             }
             else
             {
+                //a it's right son of its parent
                 a->parent->right.reset(b);
             }
 
@@ -101,9 +102,9 @@ class bst
          * @param data The root of the bst to be created
          * @param c The instance of the CompareType
          */
-        bst(std::pair<KeyType, ValueType>& data, CompareType c = CompareType{}):
-                root{Node{data}}, comparator{c} {}
-        
+        bst(std::pair<KeyType, ValueType> data, CompareType c = CompareType{}):
+            root{std::make_unique<Node>(data)}, comparator{c} {}
+
         /**
          * @brief copy constructor
          * @param bst A reference to another bst
@@ -190,7 +191,7 @@ class bst
                     if (!current->left) 
                     {
                         current->left = std::make_unique<Node>(
-                            Node{data, current}
+                            new Node{data, current}
                         );
                         iterator it = iterator{current->left.get()};
                         return std::pair<iterator, bool>{it, true};
@@ -203,7 +204,7 @@ class bst
                     if(!current->right)
                     {
                         current->right = std::make_unique<Node>(
-                            Node{data, current}
+                            new Node{data, current}
                         );
                         iterator it{current->right.get()};
                         return std::pair<iterator, bool>{it, true};
@@ -218,8 +219,8 @@ class bst
             }
             
             //current is root and it's nullptr
-            current = Node{data};
-            iterator it{current};
+            root = std::make_unique<Node>(data);
+            iterator it{root.get()};
             return std::pair<iterator, bool>{it, true};
         }      
 
@@ -235,7 +236,7 @@ class bst
                     if (!current->left)
                     {
                         current->left = std::make_unique<Node>(
-                            Node{std::forward<pair_type>(data), current}
+                           std::forward<pair_type>(data), current
                         );
                         iterator it = iterator{current->left.get()};
                         return std::pair<iterator, bool>{it, true};
@@ -248,7 +249,7 @@ class bst
                     if(!current->right)
                     {
                         current->right = std::make_unique<Node>(
-                            Node{std::forward<pair_type>(data), current}
+                            std::forward<pair_type>(data), current
                         );
                         iterator it{current->right.get()};
                         return std::pair<iterator, bool>{it, true};
@@ -263,8 +264,8 @@ class bst
             }
             
             //current is root and it's nullptr
-            current = Node{std::forward<pair_type>(data)};
-            iterator it{current};
+            root = std::make_unique<Node>(std::forward<pair_type>(data));
+            iterator it{root.get()};
             return std::pair<iterator, bool>{it, true};
         }      
 
@@ -320,7 +321,7 @@ class bst
             while(current)
             {
                 // given key is smaller than current go left
-                if(comparator(key, current->data.first))
+                if (comparator(key, current->data.first))
                 {
                     current = current->left.get();
                 }
@@ -357,6 +358,7 @@ class bst
         void erase(const KeyType& key)
         {
             Node * node = find(key).current;
+            std::cout << (node == nullptr) << std::endl;
             if (!node->left)
             {
                 transplant(node, node->right.get());
@@ -443,8 +445,8 @@ class bst
                     if (!current->left)
                     {
                         auto pair = std::pair<KeyType, ValueType>{key, ValueType{}};
-                        current->left = Node{pair, current};
-                        return current->left.get()->data.right;
+                        current->left = std::make_unique<Node>(pair, current);
+                        return current->left->data.second;
                     }
                     else
                     {
@@ -457,8 +459,8 @@ class bst
                     if (!current->right)
                     {
                         auto pair = std::pair<KeyType, ValueType>{key, ValueType{}};
-                        current->right = Node{pair, current};
-                        return current->right.get()->data.right;
+                        current->right = std::make_unique<Node>(pair, current);
+                        return current->right->data.second;
                     }
                     else
                     {
@@ -468,11 +470,15 @@ class bst
                 }
                 else
                 {
-                     return current->data.right;
+                     return current->data.second;
                 }
                 
             }
-            
+
+            //root is null
+            auto pair = std::pair<KeyType, ValueType>{key, ValueType{}};
+            root = std::make_unique<Node>(pair, nullptr);
+            return root->data.second;
         }
 
         ValueType& operator[](KeyType&& key) noexcept
@@ -487,8 +493,8 @@ class bst
                         auto pair = std::pair<KeyType, ValueType>{
                             std::forward<KeyType>(key), ValueType{}
                         };
-                        current->left = std::make_unique<Node>(Node{pair, current});
-                        return current->left.get()->data.right;
+                        current->left = std::make_unique<Node>(pair, current);
+                        return current->left->data.second;
                     }
                     else
                     {
@@ -503,8 +509,8 @@ class bst
                         auto pair = std::pair<KeyType, ValueType>{
                             std::forward<KeyType>(key), ValueType{}
                         };
-                        current->right = std::make_unique<Node>(Node{pair, current});
-                        return current->right.get()->data.right;
+                        current->right = std::make_unique<Node>(pair, current);
+                        return current->right->data.second;
                     }
                     else
                     {
@@ -515,21 +521,24 @@ class bst
                 else
                 {
                     //element found
-                     return current->data.right;
+                     return current->data.second;
                 }
                 
             }
+
+            
+            //root is null
+            auto pair = std::pair<KeyType, ValueType>{std::forward<KeyType>(key), ValueType{}};
+            root = std::make_unique<Node>(pair, nullptr);
+            return root->data.second;
             
         }
 
         friend std::ostream& operator<<(std::ostream& os, const bst& x)
         {
-            iterator current = x.begin();
-            iterator end = x.end();
-            while (current!=end)
+            for(auto it=x.begin(); it!=x.end(); ++it)
             {
-                os << (*current).second << " "
-                ++(current);
+                os << "(" << (*it).first << ", " << (*it).second << ") ";
             }
             return os;
         }

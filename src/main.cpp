@@ -3,7 +3,21 @@
 
 int main() {
     std::pair<int, int> p{1,1};
-    bst<int, int> b{p};
+    std::pair<int, int> p2{4,4};
+    std::pair<int, int> p3{3,3};
+    bst<int, int> b;
+    b.emplace(9,9);
+    b[2];
+    b.insert(p);
+    b.insert(p2);
+    b.insert(p3);
+    b.insert(std::pair<int, int>{7,7});
+    int val = b[5];
+    //int val = (*b.find(3)).first;
+    //iterator it{b.begin()};
+    //for(auto it{b.begin()}; it!=b.end(); ++it)
+    //    std::cout << (*it).first << " ";
+    //std::cout << val << std::endl;
     std::cout << b << std::endl;
     return 0;
 }
