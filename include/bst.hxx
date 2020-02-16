@@ -187,7 +187,7 @@ class bst
             {
                 if (comparator(data.first, current->data.first))
                 {
-                    if (!current->left)
+                    if (!current->left) 
                     {
                         current->left = std::make_unique<Node>(
                             Node{data, current}
@@ -394,7 +394,7 @@ class bst
             // Store node inorder
             storeBSTNodes(root->left, nodes);
             nodes.push_back(root);
-            storeBSTNodes(root-right, nodes);
+            storeBSTNodes(root->right, nodes);
             
         }
 
