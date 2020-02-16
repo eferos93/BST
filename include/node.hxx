@@ -9,7 +9,7 @@
 template<class KeyType, class ValueType, class CompareType>
 class bst<KeyType, ValueType, CompareType>::Node 
 {   
-    friend class iterator;
+    friend class bst;
     private:
         /**
          * tuple containing the key which is an unique identifier for the node
@@ -19,7 +19,7 @@ class bst<KeyType, ValueType, CompareType>::Node
         /**
          * pointers to left and right child
          */
-        std:unique_ptr<Node> left, right;
+        std::unique_ptr<Node> left, right;
         /**
          * pointer to parent node
          */
