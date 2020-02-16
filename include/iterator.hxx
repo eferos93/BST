@@ -63,7 +63,7 @@ class bst<KeyType, ValueType, CompareType>::iterator
          * @brief it++ for iterating to the next node
          * @return Iterator value before advancing to the next node
          */
-        iterator operator++() noexcept
+        iterator operator++(int) noexcept
         {
             iterator iter{*this};
             ++(*this);
