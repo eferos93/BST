@@ -51,11 +51,17 @@ int main() {
         std::cout << "Moved tree" << std::endl;
         std::cout << copy_bst << std::endl;
 
+        b.balance();
+
+        auto it = b.find(10);
+
+        /*auto it{b.begin()};
+        for(auto it{b.begin()}; it!=b.end(); ++it)
+            std::cout << (*it).first << " ";*/  
+
+        std::cout << (*it).first << std::endl;
+
         b.clear();
         std::cout << b << std::endl;
-
-
-
-
 
 }

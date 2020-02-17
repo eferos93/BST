@@ -88,6 +88,10 @@ class bst
             }
         }
 
+        /**
+         * @brief Recursive private method to create deep copy of a binary search tree
+         * @param node The root node of the tree that should be copied
+         */
 
         void copy(const std::unique_ptr<Node> &node)
         {
@@ -98,6 +102,7 @@ class bst
                 copy(node->right);
             }
         }
+
 
     public:
         CompareType comparator;
@@ -301,10 +306,11 @@ class bst
          *  @brief Find the node of given key
          *  @param key The key value to be found in bst
          */
-        iterator find(const KeyType& key){
+        iterator find(const KeyType& key)
+        {
             Node * current = root.get();
             // until current equals to null pointer
-            while(current)
+            while (current)
             {
                 // given key is smaller than current go left
                 if(comparator(key, current->data.first))
@@ -320,16 +326,17 @@ class bst
                     // it is equal return current one
                     return iterator{current};
                 }
-                // key does not exist in tree
-                return end();
             }
-        }      
+
+             // key does not exist in tree
+                return end();
+        }     
 
         const_iterator find(const KeyType& key) const
         {
             Node * current = root.get();
             // until current equals to null pointer
-            while(current)
+            while (current)
             {
                 // given key is smaller than current go left
                 if (comparator(key, current->data.first))
@@ -345,11 +352,11 @@ class bst
                     // it is equal return current one
                     return const_iterator{current};
                 }
-                // key does not exist in tree
-                return end();
             }
-        }
 
+            // key does not exist in tree
+            return end();
+        }
 
         /**
          * @brief given a key, find the node and delete the node
@@ -382,23 +389,6 @@ class bst
             }
             
         }
-        /**
-         *  @brief auxiliary recursive function to store nodes
-         *  @param nodes vector to store the nodes
-         */ 
-
-        void storeBSTNodes(Node* root,std::vector<Node*> &nodes){
-            // Base case
-            if (root)
-            {
-                return;
-            }
-            // Store node inorder
-            storeBSTNodes(root->left, nodes);
-            nodes.push_back(root);
-            storeBSTNodes(root->right, nodes);
-            
-        }
 
         /**
          *  @brief auxiliary recursive function to build a bst
@@ -407,15 +397,15 @@ class bst
          *  @param end ending position
          */ 
 
-        void buildTree(std::vector<Node*> &nodes, int start, int end){
+        void buildTree(std::vector<std::pair<KeyType,ValueType>> &nodes, int start, int end){
             if(start>end)
                 return;
             // Get the middle element
             int mid = (start + end) / 2;
-            Node *root = nodes[mid];
+            insert(nodes[mid]);            
             
-            root->left = buildTree(nodes,start,mid-1);
-            root->right = buildTree(nodes, mid+1, end);
+            buildTree(nodes,start,mid-1);
+            buildTree(nodes, mid+1, end);
 
         }
 
@@ -425,12 +415,13 @@ class bst
 
         void balance(){
 
-            std::vector<Node *> nodes;
-            storeBSTNodes(root,nodes);
+            std::vector<std::pair<KeyType, ValueType>> nodes;
+            for(auto x : *this)
+                nodes.push_back(x);
 
-            //Construct BST from nodes
-            int n = nodes.size();
-            buildTree(nodes,0,n-1);
+            clear();
+
+            buildTree(nodes,0,nodes.size()-1);
 
         }
 
