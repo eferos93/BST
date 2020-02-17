@@ -7,7 +7,7 @@ class bst<KeyType, ValueType, CompareType>::iterator
     using Node = bst<KeyType, ValueType, CompareType>::Node;
 
     private:
-    Node * current;
+        Node * current;
 
     public:
 

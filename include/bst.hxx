@@ -1,10 +1,11 @@
 /**
  * bst.hxx file
- * @authors: Eros Fabrici, ... , ....
+ * @authors: Eros Fabrici, Dogan Can Demirbilek , ....
  **/
 #include <iostream>
 #include <utility>
 #include <memory>
+#include <vector>
 
 #ifndef BST_HXX__
 #define BST_HXX__
@@ -15,7 +16,6 @@ class bst
     private:
         class Node;
         std::unique_ptr<Node> root;
-    public:
         /**
          * @brief Given a node in a tree, returns its successor
          * @param node A pointer to a node
@@ -40,8 +40,8 @@ class bst
         }
 
         /**
-         * @brief Given a pointer to a node, find the minimum 
-         * (according to the ordering) in the sub-tree rooted in node
+         * @brief Given a pointer to a node, find the minimum in the sub-tree
+         * with node as root
          * @param node Pointer to a node
          * @return Pointer to a node which is the minimum of the sub-tree rooted
          * in node
@@ -58,6 +58,24 @@ class bst
             }
             return node;
         }
+
+
+
+        /**
+         * @brief Recursive private method to create deep copy of a binary search tree
+         * @param node The root node of the tree that should be copied
+         */
+
+        void copy(const std::unique_ptr<Node> &node)
+        {
+            if (node)
+            {
+                insert(node->data);
+                copy(node->left);
+                copy(node->right);
+            }
+        }
+
 
     public:
         CompareType comparator;
@@ -159,7 +177,7 @@ class bst
             {
                 if (comparator(data.first, current->data.first))
                 {
-                    if (!current->left)
+                    if (!current->left) 
                     {
                         current->left = std::make_unique<Node>(
                             data, current
@@ -200,7 +218,7 @@ class bst
             // If tree isn't empty, cur node will be created
             Node * current = root.get();
             using pair_type = std::pair<KeyType, ValueType>;
-            while (current)
+            while(current)
             {
                 if (comparator(data.first, current->data.first))
                 {
@@ -246,10 +264,11 @@ class bst
         *  @return A pair (iterator, bool)
         */
         template<class... Types>
-        std::pair<iterator, bool> emplace(Types&&... args)
+        std::pair<iterator,bool> emplace(Types&&... args)
         {
             return insert(std::pair<KeyType, ValueType>{std::forward<Types>(args)...});
         }
+
 
         /**
          *  @brief Clears all the elements of the tree
@@ -284,13 +303,8 @@ class bst
 
              // key does not exist in tree
                 return end();
-        }
+        }     
 
-        /**
-         * @brief Method that given a key, searches for the element inside the bst
-         * @param key The key to be searched
-         * @return Return a const_iterator containing a pointer to the found node
-         */
         const_iterator find(const KeyType& key) const
         {
             Node * current = root.get();
@@ -315,16 +329,6 @@ class bst
 
             // key does not exist in tree
             return end();
-        }
-
-        void copy(const std::unique_ptr<Node> node)
-        {
-            if (node)
-            {
-                insert(node->data);
-                copy(node->left);
-                copy(node->right);
-            }
         }
 
         /**
@@ -395,6 +399,42 @@ class bst
                 node->parent->right.release();
                 node->parent->right.reset(subtree_root);
             }
+        }
+
+
+        /**
+         *  @brief auxiliary recursive function to build a bst
+         *  @param nodes containers of nodes
+         *  @param start beginning position
+         *  @param end ending position
+         */ 
+
+        void buildTree(std::vector<std::pair<KeyType,ValueType>> &nodes, int start, int end){
+            if(start>end)
+                return;
+            // Get the middle element
+            int mid = (start + end) / 2;
+            insert(nodes[mid]);            
+            
+            buildTree(nodes,start,mid-1);
+            buildTree(nodes, mid+1, end);
+
+        }
+
+        /**
+         *  @brief function that balance the tree
+         */ 
+
+        void balance(){
+
+            std::vector<std::pair<KeyType, ValueType>> nodes;
+            for(auto it = begin(); it!= end(); ++it)
+                nodes.push_back(*it);
+
+            clear();
+
+            buildTree(nodes,0,nodes.size()-1);
+
         }
 
         ValueType& operator[](const KeyType& key) noexcept

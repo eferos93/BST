@@ -12,16 +12,11 @@ int main() {
     b.insert(p2);
     b.insert(p3);
     b.insert(std::pair<int, int>{7,7});
-    int val = b[5];
-    std::cout << b << std::endl;
-    b.erase(3);
-    std::cout << b << std::endl;
-    b.erase(4);
+    ///int val = b[5];
+    bst<int,int> b2{b};
     //b.erase(4);
-    auto it = b.find(10);
-    std::cout << "hello" << std::endl;
-    std::cout << (*it).first << std::endl;
     std::cout << b << std::endl;
+    std::cout << b2 << std::endl;
     //int val = (*b.find(3)).first;
     //iterator it{b.begin()};
     //for(auto it{b.begin()}; it!=b.end(); ++it)
