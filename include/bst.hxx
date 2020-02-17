@@ -16,7 +16,6 @@ class bst
     private:
         class Node;
         std::unique_ptr<Node> root;
-    public:
         /**
          * @brief Given a node in a tree, returns its successor
          * @param node A pointer to a node
@@ -41,8 +40,8 @@ class bst
         }
 
         /**
-         * @brief Given a pointer to a node, find the minimum 
-         * (according to the ordering) in the sub-tree rooted in node
+         * @brief Given a pointer to a node, find the minimum in the sub-tree
+         * with node as root
          * @param node Pointer to a node
          * @return Pointer to a node which is the minimum of the sub-tree rooted
          * in node
@@ -59,6 +58,24 @@ class bst
             }
             return node;
         }
+
+
+
+        /**
+         * @brief Recursive private method to create deep copy of a binary search tree
+         * @param node The root node of the tree that should be copied
+         */
+
+        void copy(const std::unique_ptr<Node> &node)
+        {
+            if (node)
+            {
+                insert(node->data);
+                copy(node->left);
+                copy(node->right);
+            }
+        }
+
 
     public:
         CompareType comparator;
@@ -201,7 +218,7 @@ class bst
             // If tree isn't empty, cur node will be created
             Node * current = root.get();
             using pair_type = std::pair<KeyType, ValueType>;
-            while (current)
+            while(current)
             {
                 if (comparator(data.first, current->data.first))
                 {
@@ -410,8 +427,8 @@ class bst
         void balance(){
 
             std::vector<std::pair<KeyType, ValueType>> nodes;
-            for(auto x : *this)
-                nodes.push_back(x);
+            for(auto it = begin(); it!= end(); ++it)
+                nodes.push_back(*it);
 
             clear();
 

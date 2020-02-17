@@ -5,7 +5,9 @@ class bst<KeyType, ValueType, CompareType>::iterator
 {
     friend class bst;
     using Node = bst<KeyType, ValueType, CompareType>::Node;
-    Node * current;
+
+    private:
+        Node * current;
 
     public:
 

@@ -54,9 +54,6 @@ class bst<KeyType, ValueType, CompareType>::Node
             data{node.data}, left{nullptr}, right{nullptr},
             parent{nullptr} {}
 
-        /*Node(std::pair<KeyType, ValueType> data, Node * parent, Node * left, Node * right) :
-            data{data}, left{}
-        */
         bool operator==( Node * b)
         {
             return &this == b;
