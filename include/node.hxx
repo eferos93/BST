@@ -52,5 +52,5 @@ class bst<KeyType, ValueType, CompareType>::Node
          */
         Node(const Node& node): 
             data{node.data}, left{nullptr}, right{nullptr},
-            parent{nullptr} {}
+            parent{node.parent} {}
 };

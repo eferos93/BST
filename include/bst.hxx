@@ -88,6 +88,17 @@ class bst
             }
         }
 
+
+        void copy(const std::unique_ptr<Node> &node)
+        {
+            if (node)
+            {
+                insert(node->data);
+                copy(node->left);
+                copy(node->right);
+            }
+        }
+
     public:
         CompareType comparator;
         class iterator;
@@ -191,7 +202,7 @@ class bst
                     if (!current->left) 
                     {
                         current->left = std::make_unique<Node>(
-                            new Node{data, current}
+                            data, current
                         );
                         iterator it = iterator{current->left.get()};
                         return std::pair<iterator, bool>{it, true};
@@ -204,7 +215,7 @@ class bst
                     if(!current->right)
                     {
                         current->right = std::make_unique<Node>(
-                            new Node{data, current}
+                            data, current
                         );
                         iterator it{current->right.get()};
                         return std::pair<iterator, bool>{it, true};
@@ -284,7 +295,7 @@ class bst
         /**
          *  @brief Clears all the elements of the tree
          */
-        void clear(); { root.reset(); }
+        void clear() { root.reset(); }
 
         /**
          *  @brief Find the node of given key
@@ -339,17 +350,6 @@ class bst
             }
         }
 
-
-
-        void copy(const std::unique_ptr<Node> node)
-        {
-            if (node)
-            {
-                insert(node->data);
-                copy(node->left);
-                copy(node->right);
-            }
-        }
 
         /**
          * @brief given a key, find the node and delete the node
