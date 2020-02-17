@@ -15,7 +15,7 @@ class bst<KeyType, ValueType, CompareType>::Node
          * tuple containing the key which is an unique identifier for the node
          * and the value
          */
-        std::pair<const KeyType, ValueType> data;
+        std::pair<KeyType, ValueType> data;
         /**
          * pointers to left and right child
          */
@@ -53,4 +53,17 @@ class bst<KeyType, ValueType, CompareType>::Node
         Node(const Node& node): 
             data{node.data}, left{nullptr}, right{nullptr},
             parent{nullptr} {}
+
+        /*Node(std::pair<KeyType, ValueType> data, Node * parent, Node * left, Node * right) :
+            data{data}, left{}
+        */
+        bool operator==( Node * b)
+        {
+            return &this == b;
+        }
+
+        bool operator!=(Node * b)
+        {
+            return !(&this == b);
+        }
 };
