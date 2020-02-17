@@ -16,6 +16,7 @@ class bst
     private:
         class Node;
         std::unique_ptr<Node> root;
+    public:
         /**
          * @brief Given a node in a tree, returns its successor
          * @param node A pointer to a node
@@ -25,7 +26,7 @@ class bst
         {
             if (node->right)
             {
-                return minimun(node->right.get());
+                return minimum(node->right.get());
             }
 
             Node * p = node->parent;
@@ -40,8 +41,8 @@ class bst
         }
 
         /**
-         * @brief Given a pointer to a node, find the minimum in the sub-tree
-         * with node as root
+         * @brief Given a pointer to a node, find the minimum 
+         * (according to the ordering) in the sub-tree rooted in node
          * @param node Pointer to a node
          * @return Pointer to a node which is the minimum of the sub-tree rooted
          * in node
@@ -52,57 +53,12 @@ class bst
             {
                 return begin().current;
             }
-            while (node)
+            while (node->left)
             {
                 node = node->left.get();
             }
             return node;
         }
-
-        /**
-         * @brief Replaces the subtree rooted at node a, with the subtree rooted
-         * at node b
-         * @param a A pointer to a Node
-         * @param b A pointer to a Node
-         */
-        void transplant(Node * a, Node * b)
-        {
-            if (!a->parent)
-            {
-                root.reset(b);
-            }
-            else if (a == a->parent->left.get())
-            {
-                //a it's left son of its parent
-                a->parent->left.reset(b);
-            }
-            else
-            {
-                //a it's right son of its parent
-                a->parent->right.reset(b);
-            }
-
-            if (b)
-            {
-                b->parent = a->parent;
-            }
-        }
-
-        /**
-         * @brief Recursive private method to create deep copy of a binary search tree
-         * @param node The root node of the tree that should be copied
-         */
-
-        void copy(const std::unique_ptr<Node> &node)
-        {
-            if (node)
-            {
-                insert(node->data);
-                copy(node->left);
-                copy(node->right);
-            }
-        }
-
 
     public:
         CompareType comparator;
@@ -196,7 +152,7 @@ class bst
          *  @return a pair<iterator, bool>
          */ 
 
-        std::pair<iterator, bool> insert(const std::pair<const KeyType, ValueType>& data){
+        std::pair<iterator, bool> insert(const std::pair<KeyType, ValueType>& data){
             // If tree isn't empty, cur node will be created
             Node * current = root.get();
             
@@ -240,12 +196,12 @@ class bst
             return std::pair<iterator, bool>{it, true};
         }      
 
-        std::pair<iterator, bool> insert(std::pair<const KeyType, ValueType>&& data)
+        std::pair<iterator, bool> insert(std::pair<KeyType, ValueType>&& data)
         {
             // If tree isn't empty, cur node will be created
             Node * current = root.get();
-            using pair_type = std::pair<const KeyType, ValueType>;
-            while(current)
+            using pair_type = std::pair<KeyType, ValueType>;
+            while (current)
             {
                 if (comparator(data.first, current->data.first))
                 {
@@ -293,7 +249,7 @@ class bst
         template<class... Types>
         std::pair<iterator,bool> emplace(Types&&... args)
         {
-            return insert(std::pair<const KeyType, ValueType>{std::forward<Types>(args)...});
+            return insert(std::pair<KeyType, ValueType>{std::forward<Types>(args)...});
         }
 
 
@@ -364,30 +320,68 @@ class bst
          */
         void erase(const KeyType& key)
         {
-            Node * node = find(key).current;
-            std::cout << (node == nullptr) << std::endl;
-            if (!node->left)
+            Node * p = find(key).current;
+            if(!p)
             {
-                transplant(node, node->right.get());
+                return;
             }
-            else if (!node->right)
+
+            Node * node;
+            Node * subtree_root;
+            
+            if (p->left && p->right)
             {
-                transplant(node, node->left.get());
+                node = successor(p);
             }
             else
             {
-                Node * temp = minimum(node->right.get());
-                if (temp->parent != node)
-                {
-                    transplant(temp, temp->right.get());
-                    temp->right.reset(node->right.get());
-                    temp->right->parent = temp;
-                }
-                transplant(node, temp);
-                temp->left.reset(node->left.get());
-                temp->left->parent = temp;
+                node = p;
             }
             
+            if (node->left)
+            {
+                subtree_root = node->left.get();
+            }
+            else
+            {
+                subtree_root = node->right.get();
+            }
+
+            if (subtree_root)
+            {
+                subtree_root->parent = node->parent;
+            }
+
+            if (!node->parent)
+            {
+                if(node != p)
+                {
+                    p->data.first = node->data.first;
+                    p->data.second = node->data.second; 
+                }
+                root.release();
+                root.reset(subtree_root);
+            }
+            else if (node == node->parent->left.get())
+            {
+                if(node != p)
+                {
+                    p->data.first = node->data.first;
+                    p->data.second = node->data.second; 
+                }
+                node->parent->left.release();
+                node->parent->left.reset(subtree_root);
+            }
+            else
+            {
+                if(node != p)
+                {
+                    p->data.first = node->data.first;
+                    p->data.second = node->data.second; 
+                }
+                node->parent->right.release();
+                node->parent->right.reset(subtree_root);
+            }
         }
 
         /**

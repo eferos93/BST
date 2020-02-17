@@ -2,66 +2,33 @@
 #include "bst.hxx"
 
 int main() {
-
-        std::pair<int, int> pair1{8,8};
-        std::pair<int, int> pair2{3,3};
-        std::pair<int, int> pair3{10,10};
-        std::pair<int, int> pair4{1,1};
-        std::pair<int, int> pair5{6,6};
-        std::pair<int, int> pair6{4,4};
-        std::pair<int, int> pair7{7,7};
-        std::pair<int, int> pair8{14,14};
-        std::pair<int, int> pair9{13,13};
-
-        std::pair<int, int> pair3_bis{10,3};
-        
-        // Printing the empty BST
-        bst<int,int> b{};
-        std::cout << b << std::endl;
-
-        //Testing building-up-tree methods
-        b.insert(pair1);
-        b.insert(pair2);			
-        b.insert(pair3);
-        b.insert(pair4);
-        b.insert(pair5);
-        b.insert(pair6);
-        b.insert(pair7);
-        b.emplace(pair8);
-        b.insert(pair9); 
-
-        std::cout << b << std::endl;
-
-        // Inserting a node with a key already present: expect no change
-        b.insert(pair3_bis); 
-        std::cout << b << std::endl;
-
-        //  Testing operator[] 
-        int key = 13;
-        std::cout << "The value associated to key " << key << " is " << b[key] << std::endl;
-
-        // Test copy and move constructors
-
-        bst<int,int> copy_bst{b};
-        std::cout << "Copied tree" << std::endl;
-        std::cout << copy_bst << std::endl;
-
-
-        bst<int,int> move_bst = std::move(b);
-        std::cout << "Moved tree" << std::endl;
-        std::cout << copy_bst << std::endl;
-
-        b.balance();
-
-        auto it = b.find(10);
-
-        /*auto it{b.begin()};
-        for(auto it{b.begin()}; it!=b.end(); ++it)
-            std::cout << (*it).first << " ";*/  
-
-        std::cout << (*it).first << std::endl;
-
-        b.clear();
-        std::cout << b << std::endl;
-
+    std::pair<int, int> p{1,1};
+    std::pair<int, int> p2{4,4};
+    std::pair<int, int> p3{3,3};
+    bst<int, int> b;
+    b.emplace(9,9);
+    b[2];
+    b.insert(p);
+    b.insert(p2);
+    b.insert(p3);
+    b.insert(std::pair<int, int>{7,7});
+    int val = b[5];
+    std::cout << b << std::endl;
+    b.erase(3);
+    std::cout << b << std::endl;
+    b.erase(4);
+    //b.erase(4);
+    auto it = b.find(10);
+    std::cout << "hello" << std::endl;
+    std::cout << (*it).first << std::endl;
+    std::cout << b << std::endl;
+    //int val = (*b.find(3)).first;
+    //iterator it{b.begin()};
+    //for(auto it{b.begin()}; it!=b.end(); ++it)
+    //{
+    //    std::cout << (*it).first << " ";
+    //}
+    //std::cout << val << std::endl;
+    
+    return 0;
 }
