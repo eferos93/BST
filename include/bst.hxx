@@ -399,6 +399,8 @@ class bst
                 node->parent->right.release();
                 node->parent->right.reset(subtree_root);
             }
+            delete node;
+            delete subtree_root;
         }
 
         /**
