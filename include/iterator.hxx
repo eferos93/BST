@@ -17,7 +17,7 @@ class bst<KeyType, ValueType, CompareType>::iterator
          * @brief Operator *iter
          * @return A reference to the tuple (keytype, valuetype)
          */
-        std::pair<const KeyType, ValueType>& operator*() const noexcept
+        std::pair<KeyType, ValueType>& operator*() const noexcept
         {
             //return current.getData();
             return current->data;

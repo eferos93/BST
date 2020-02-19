@@ -76,11 +76,11 @@ class bst
             }
         }
 
-
     public:
         CompareType comparator;
         class iterator;
         class const_iterator;
+
         /**
          * @brief Default constructor
          */
@@ -402,6 +402,14 @@ class bst
         }
 
         /**
+         * @brief method to get the root of tree
+         */
+         
+        Node*  getRoot() {
+            return root.get();
+        }
+
+        /**
          *  @brief auxiliary recursive function to build a bst
          *  @param nodes containers of nodes
          *  @param start beginning position
@@ -411,6 +419,8 @@ class bst
         void buildTree(std::vector<std::pair<KeyType,ValueType>> &nodes, int start, int end){
             if(start>end)
                 return;
+
+            if(start == end) {insert(nodes[start]); return;}
             // Get the middle element
             int mid = (start + end) / 2;
             insert(nodes[mid]);            
@@ -418,6 +428,37 @@ class bst
             buildTree(nodes,start,mid-1);
             buildTree(nodes, mid+1, end);
 
+        }
+        /**
+         * @brief find the height of tree
+         * @param node pointer to root node of tree
+         */
+
+        int height(Node* node){
+
+            if(node == nullptr)
+                return 0;
+            return 1 + std::max(height(node->left.get()),
+                           height(node->right.get()));
+        } 
+
+        /**
+         * @brief find if tree is balanced
+         * @param node pointer to root node of tree
+         * @return 1 if tree is balanced, otherwise 0
+         */
+
+        bool isBalanced(Node* node){
+            int lh,rh;
+
+            if(node==nullptr)
+                return true;
+            lh = height(node->left.get());
+            rh = height(node-> right.get());
+
+            if(abs(lh-rh) <= 1 && isBalanced(node->left.get()) && isBalanced(node->right.get()))
+                return true;
+            return false;
         }
 
         /**
