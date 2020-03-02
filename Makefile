@@ -2,11 +2,10 @@ TEST = test.o
 BENCHMARK = benchmark.o
 DEFINES = NONE # PTREE for tree printing
 CXX = c++
-TESTSRC = src/main.cpp
+TESTSRC = src/test.cpp
 BENCHSRC = src/benchmark.cpp
 CXXFLAGS = -std=c++14 -Wall -Wextra
 IFLAGS = -I include
-DFLAGS = -D $(DEFINES)
 
 all: $(TEST) $(BENCHMARK)
 

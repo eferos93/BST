@@ -35,8 +35,8 @@ int main() {
     std::cout << b << std::endl;
 
     //  Testing operator[] 
-    int key = 5;
-    std::cout << "\nThe value associated to key " << key << " is " << b[key] << std::endl;
+    int key2 = 5;
+    std::cout << "\nThe value associated to key " << key2 << " is " << b[key2] << std::endl;
 
     //Testing find method
     auto f = b.find(3);

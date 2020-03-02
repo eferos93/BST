@@ -12,7 +12,7 @@ int main() {
     const int N{10000}; // Number of elements to be inserted and found 
 
     std::ofstream outFile;
-    outFile.open("benchmark_times.txt");
+    outFile.open("../benchmark/benchmark_times.txt");
 
     //For generating random numbers
     std::random_device dev;
