@@ -105,6 +105,11 @@ public bst<KeyType,ValueType, CompareType>::iterator
 	friend class bst;
 	/** Alias to make names shorter and intuitive*/
 	using iterator = bst<KeyType,ValueType, CompareType>::iterator;
+private:
+	/**
+	 * @brief Returns a constant pointer to the node pointed to by the iterator.
+	 */
+	//const Node * getNode() const { return Iterator::getNode(); }
 public:
 	/** Uses the same method of the base class. */
 	using iterator::iterator;
@@ -113,7 +118,7 @@ public:
 	 * @return const std::pair<TKey, TValue>& Constant reference to current 
 	 * node's data in key, value format.
 	 */
-	const std::pair<KeyType, ValueType>& operator*() const 
+	const std::pair<const KeyType, ValueType>& operator*() const 
     { 
         return iterator::operator*(); 
     }
