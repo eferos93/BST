@@ -33,44 +33,13 @@ class bst<KeyType, ValueType, CompareType>::iterator
          * traversal
          * @return Iterator& Reference to this iterator with updated state
          */
-        iterator& operator++()
-        {
-            if (!current)
-            {
-                return *this;
-            }
-            else if (current->right)
-            {
-                current = current->right.get();
-                while (current->left)
-                {
-                    current = current->left.get();
-                }
-            }
-            else
-            {
-                Node* temp{current->parent};
-                while (temp && current == temp->right.get())
-                {
-                    current = temp;
-                    temp = temp->parent;
-                }
-                current = temp;
-            }
-            return *this;
-            
-        }
+        iterator& operator++();
 
         /**
          * @brief it++ for iterating to the next node
          * @return Iterator value before advancing to the next node
          */
-        iterator operator++(int) noexcept
-        {
-            iterator iter{*this};
-            ++(*this);
-            return iter;
-        }
+        iterator operator++(int) noexcept;
         
         /**
          * @brief Operator == to check equality between two iterators, e.g.
@@ -98,10 +67,46 @@ class bst<KeyType, ValueType, CompareType>::iterator
 };
 
 template<class KeyType, class ValueType, class CompareType>
+typename bst<KeyType,ValueType,CompareType>::iterator& bst<KeyType,ValueType,CompareType>::iterator::operator++()
+{
+    if (!current)
+    {
+        return *this;
+    }
+    else if (current->right)
+    {
+        current = current->right.get();
+        while (current->left)
+        {
+            current = current->left.get();
+        }
+    }
+    else
+    {
+        Node *temp{current->parent};
+        while (temp && current == temp->right.get())
+        {
+            current = temp;
+            temp = temp->parent;
+        }
+        current = temp;
+    }
+    return *this;
+}
+
+template<class KeyType, class ValueType, class CompareType>
+typename bst<KeyType,ValueType,CompareType>::iterator bst<KeyType,ValueType,CompareType>::iterator::operator++(int) noexcept
+{
+    iterator iter{*this};
+    ++(*this);
+    return iter;
+}
+
+
+template<class KeyType, class ValueType, class CompareType>
 class bst<KeyType,ValueType, CompareType>::const_iterator : 
 public bst<KeyType,ValueType, CompareType>::iterator
 {
-	/** Used to give access to getNode method */
 	friend class bst;
 	/** Alias to make names shorter and intuitive*/
 	using iterator = bst<KeyType,ValueType, CompareType>::iterator;
@@ -114,8 +119,8 @@ public:
 	/** Uses the same method of the base class. */
 	using iterator::iterator;
 	/**
-	 * @brief Operator it() for deferencing a binary search tree iterator.
-	 * @return const std::pair<TKey, TValue>& Constant reference to current 
+	 * @brief Operator for deferencing a binary search tree iterator.
+	 * @return const std::pair<KeyType, ValueType>& Constant reference to current 
 	 * node's data in key, value format.
 	 */
 	const std::pair<const KeyType, ValueType>& operator*() const 
