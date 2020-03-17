@@ -24,13 +24,13 @@ class bst
         Node * successor(Node * node);
 
         /**
-         * @brief Given a pointer to a node, find the left_most element in the sub-tree
+         * @brief Given a pointer to a node, find the leftmost element in the sub-tree
          * with node as root
          * @param node Pointer to a node
-         * @return Pointer to a node which is the left_most element of the sub-tree rooted
+         * @return Pointer to a node which is the leftmost element of the sub-tree rooted
          * in node
          */
-        Node * left_most(Node * node);
+        Node * leftmost(Node * node) const;
 
 
         /**
@@ -71,31 +71,40 @@ class bst
          */
         bst(bst&& bst) noexcept : 
             root{std::move(bst.root)} {}
-
-        iterator begin() const;
-        iterator end() const { return iterator{nullptr}; }
-
-        //const_iterator end() const { return const_iterator{nullptr}; }
-        
-        const_iterator cbegin() const;
-
-        const_iterator cend() const { return const_iterator(nullptr); }
         /*
-        const_iterator begin() const 
+        iterator begin() noexcept
         {
-            if(!root)
-            {
-                return const_iterator{nullptr};
-            }
-            Node * current = root.get();
-            while (current->left)
-            {
-                current = current->left.get();
-            }
-            
-            return const_iterator{current};
+            return iterator{leftmost(root.get())};
         }
         */
+        iterator begin() const noexcept
+        {
+            return iterator{leftmost(root.get())};
+            //const_iterator it{leftmost(root.get())};
+            //return it;
+        }
+
+        const_iterator cbegin() const noexcept
+        {
+            const_iterator it{leftmost(root.get())};
+            return it;
+        }
+
+        //iterator end() noexcept { return iterator{nullptr}; }
+
+        iterator end() const noexcept
+        {
+            return iterator{nullptr};
+            //const_iterator it{nullptr};
+            //return it;
+        }
+        
+
+        const_iterator cend() const noexcept
+        {         
+            const_iterator it{nullptr};    
+            return it; 
+        }
                 //Methods
 
         /**
@@ -179,7 +188,7 @@ typename bst<KeyType,ValueType,CompareType>::Node * bst<KeyType,ValueType,Compar
 {
     if (node->right)
     {
-        return left_most(node->right.get());
+        return leftmost(node->right.get());
     }
 
     Node * p = node->parent;        
@@ -193,16 +202,16 @@ typename bst<KeyType,ValueType,CompareType>::Node * bst<KeyType,ValueType,Compar
 }
 
 template <class KeyType, class ValueType, class CompareType>
-typename bst<KeyType,ValueType,CompareType>::Node * bst<KeyType,ValueType,CompareType>::left_most(Node * node)
+typename bst<KeyType,ValueType,CompareType>::Node * bst<KeyType,ValueType,CompareType>::leftmost(Node * node) const
 {
-    if (node == root.get())
+    if (node)
     {
-        return begin().current;
+        while (node->left)
+        {
+            node = node->left.get();
+        }
     }
-    while (node->left)
-    {
-        node = node->left.get();
-    }
+
     return node;
 }
 
@@ -215,39 +224,6 @@ void bst<KeyType,ValueType,CompareType>::copy(const std::unique_ptr<bst<KeyType,
         copy(node->left);
         copy(node->right);
     }
-}
-
-template <class KeyType, class ValueType, class CompareType>
-typename bst<KeyType, ValueType, CompareType>::iterator bst<KeyType, ValueType, CompareType>::begin() const
-{
-    if(!root)
-    {
-        return iterator{nullptr};
-    }
-
-    Node * current = root.get();
-    while (current->left)
-    {
-        current = current->left.get();
-    }
-            
-    return iterator{current};
-}
-
-template <class KeyType, class ValueType, class CompareType>
-typename bst<KeyType, ValueType, CompareType>::const_iterator bst<KeyType, ValueType, CompareType>::cbegin() const
-{
-    if (!root)
-    {
-        return const_iterator{nullptr};
-    }
-    Node *current = root.get();
-    while (current->left)
-    {
-        current = current->left.get();
-    }
-
-    return const_iterator{current};
 }
 
 template <class KeyType, class ValueType, class CompareType>
@@ -265,7 +241,7 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<KeyType, ValueType>
             {
                 current->left = std::make_unique<Node>(
                     data, current);
-                iterator it = iterator{current->left.get()};
+                iterator it{current->left.get()};
                 return std::pair<iterator, bool>{it, true};
             }
 
@@ -312,7 +288,7 @@ bst<KeyType, ValueType, CompareType>::insert(std::pair<KeyType, ValueType> &&dat
             {
                 current->left = std::make_unique<Node>(
                     std::forward<pair_type>(data), current);
-                iterator it = iterator{current->left.get()};
+                iterator it{current->left.get()};
                 return std::pair<iterator, bool>{it, true};
             }
 

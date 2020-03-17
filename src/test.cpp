@@ -7,7 +7,8 @@ int main() {
     bst<int,int> b{};
     std::cout << "Empty Tree\n" <<  b << std::endl;
 
-    for(int i = 0 ; i < 10; i++){
+    for(int i = 0 ; i < 10; i++)
+    {
         if(i!=5)
             b.insert(std::pair<int,int>(i,i));
     }
