@@ -10,6 +10,8 @@
 #ifndef BST_HXX__
 #define BST_HXX__
 
+#include "iterator.hxx"
+
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
 class bst 
 {
@@ -41,8 +43,9 @@ class bst
 
     public:
         CompareType comparator;
-        class iterator;
-        class const_iterator;
+        //class __iterator<Const>;
+        using iterator = __iterator<KeyType,ValueType,CompareType,false>;
+        using const_iterator = __iterator<KeyType,ValueType,CompareType,true>;
 
         /**
          * @brief Default constructor
@@ -614,6 +617,5 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](KeyType &&key) noexcep
 }
 
 #include "node.hxx"
-#include "iterator.hxx"
 
 #endif
