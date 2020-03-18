@@ -44,8 +44,8 @@ class bst
     public:
         CompareType comparator;
         //class __iterator<Const>;
-        using iterator = __iterator<KeyType,ValueType,CompareType,false>;
-        using const_iterator = __iterator<KeyType,ValueType,CompareType,true>;
+        using iterator = __iterator<Node,KeyType,ValueType,false>;
+        using const_iterator = __iterator<Node,KeyType,ValueType,true>;
 
         /**
          * @brief Default constructor
@@ -74,17 +74,17 @@ class bst
          */
         bst(bst&& bst) noexcept : 
             root{std::move(bst.root)} {}
-        /*
+        
         iterator begin() noexcept
         {
             return iterator{leftmost(root.get())};
         }
-        */
-        iterator begin() const noexcept
+        
+        const_iterator begin() const noexcept
         {
-            return iterator{leftmost(root.get())};
-            //const_iterator it{leftmost(root.get())};
-            //return it;
+            //return iterator{leftmost(root.get())};
+            const_iterator it{leftmost(root.get())};
+            return it;
         }
 
         const_iterator cbegin() const noexcept
@@ -93,22 +93,22 @@ class bst
             return it;
         }
 
-        //iterator end() noexcept { return iterator{nullptr}; }
+        iterator end() noexcept { return iterator{nullptr}; }
 
-        iterator end() const noexcept
+        const_iterator end() const noexcept
         {
-            return iterator{nullptr};
-            //const_iterator it{nullptr};
-            //return it;
+            //return iterator{nullptr};
+            const_iterator it{nullptr};
+            return it;
         }
         
-
         const_iterator cend() const noexcept
         {         
             const_iterator it{nullptr};    
             return it; 
         }
-                //Methods
+        
+        //Methods
 
         /**
          *  @brief Insert the node of given key
@@ -382,7 +382,7 @@ bst<KeyType, ValueType, CompareType>::find(const KeyType &key) const
 template <class KeyType, class ValueType, class CompareType>
 void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
 {
-    Node* p = find(key).current;
+    Node* p = find(key).get_node();
     if (!p)
     {
         return;

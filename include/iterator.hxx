@@ -1,27 +1,29 @@
 #include <iterator>
 
-template<class KeyType, class ValueType, class CompareType, bool Const = true>
+template<class Node, class KeyType, class ValueType, bool Const = true>
 class __iterator
 {
     //friend class bst;
-    using Node = typename bst<KeyType, ValueType, CompareType>::Node;
-    using pair_type = std::pair<KeyType, ValueType>;
-    private:
-        Node * current;
-
     public:
-
-        __iterator() = default;
-        explicit __iterator(Node * node) noexcept : current{node} {}
-
-        //if Const = true, then value_type is const Node (const iterator)
-        // otherwise it is just Node
+        //using Node = typename bst<KeyType, ValueType, CompareType>::Node;
+        using pair_type = std::pair<KeyType, ValueType>;
         using value_type = typename std::conditional<Const, const pair_type, pair_type>::type;
         using reference = value_type&;
         using pointer = value_type*;
         using difference_type = std::ptrdiff_t;
         using iterator_category = std::forward_iterator_tag;
 
+    private:
+        Node * current;
+        value_type data;
+
+    public:
+        __iterator() = default;
+        explicit __iterator(Node * node) noexcept : current{node}, data{current->getData()} {}
+
+        //if Const = true, then value_type is const pair (const iterator)
+        // otherwise it is just pair
+        
 
         /**
          * @brief Operator *iter
@@ -29,13 +31,13 @@ class __iterator
          */
         reference operator*() const noexcept
         {
-            //return current.getData();
-            return current->data;
+            return current->getData();
+            //return current->data;
         }
 
         pointer operator->() const noexcept
         {
-            return &(*(*this));
+            return &(data);
         }
 
         /**
@@ -43,17 +45,17 @@ class __iterator
          * traversal
          * @return Iterator& Reference to this iterator with updated state
          */
-        __iterator& operator++();
+        __iterator& operator++() noexcept;
 
         /**
          * @brief it++ for iterating to the next node
          * @return Iterator value before advancing to the next node
          */
-        __iterator<Const> operator++(int) noexcept
+        __iterator operator++(int) noexcept
         {
-            iterator iter{*this};
+            __iterator it{*this};
             ++(*this);
-            return iter;
+            return it;
         }
         
         /**
@@ -79,32 +81,39 @@ class __iterator
         {
             return !(left.current == right.current);
         }
+
+        Node * get_node()
+        {
+            return current;
+        }
 };
 
-template<class KeyType, class ValueType, class CompareType, bool Const>
+template<class Node, class KeyType, class ValueType, bool Const>
 //template<bool Const>
-__iterator<KeyType,ValueType,CompareType,Const>& 
-__iterator<KeyType,ValueType,CompareType,Const>::operator++() noexcept
+__iterator<Node,KeyType,ValueType,Const>& 
+__iterator<Node,KeyType,ValueType,Const>::operator++() noexcept
 {
     if (!current)
     {
         return *this;
     }
-    else if (current->right)
+    else if (current->getRight())
     {
-        current = current->right.get();
-        while (current->left)
+        current = current->getLeft();
+        //current = current->right.get();
+        while (current->getLeft())
         {
-            current = current->left.get();
+            //current = current->left.get();
+            current->getLeft();
         }
     }
     else
     {
-        Node *temp{current->parent};
-        while (temp && current == temp->right.get())
+        Node *temp{current->getParent()};
+        while (temp && current == temp->getRight())
         {
             current = temp;
-            temp = temp->parent;
+            temp = temp->getParent();
         }
         current = temp;
     }
