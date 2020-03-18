@@ -15,6 +15,7 @@
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
 class bst 
 {
+    //friend class __iterator;
     private:
         class Node;
         std::unique_ptr<Node> root;
@@ -511,12 +512,11 @@ template <class KeyType, class ValueType, class CompareType>
 void bst<KeyType, ValueType, CompareType>::balance()
 {
     std::vector<std::pair<KeyType, ValueType>> nodes;
-
-    for (auto it = begin(); it != end(); ++it)
+    for(auto& node : *this)
     {
-        nodes.push_back(*it);
+        nodes.push_back(node);
     }
-
+    
     clear();
 
     buildTree(nodes, 0, nodes.size() - 1);

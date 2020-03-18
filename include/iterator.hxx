@@ -1,6 +1,6 @@
 #include <iterator>
 
-template<class Node, class KeyType, class ValueType, bool Const = true>
+template<class Node, class KeyType, class ValueType, bool Const>
 class __iterator
 {
     //friend class bst;
@@ -15,11 +15,13 @@ class __iterator
 
     private:
         Node * current;
-        value_type data;
+        //value_type data;
 
     public:
         __iterator() = default;
-        explicit __iterator(Node * node) noexcept : current{node}, data{current->getData()} {}
+        explicit __iterator(Node * node) noexcept : current{node}
+            //, data{current->getData()}
+            {}
 
         //if Const = true, then value_type is const pair (const iterator)
         // otherwise it is just pair
@@ -31,13 +33,13 @@ class __iterator
          */
         reference operator*() const noexcept
         {
-            return current->getData();
+            return current->get_data();
             //return current->data;
         }
 
         pointer operator->() const noexcept
         {
-            return &(data);
+            return &(*(*this));
         }
 
         /**
@@ -97,61 +99,26 @@ __iterator<Node,KeyType,ValueType,Const>::operator++() noexcept
     {
         return *this;
     }
-    else if (current->getRight())
+    else if (current->get_right())
     {
-        current = current->getLeft();
+        current = current->get_right().get();
         //current = current->right.get();
-        while (current->getLeft())
+        while (current->get_left())
         {
             //current = current->left.get();
-            current->getLeft();
+            current = current->get_left().get();
         }
     }
     else
     {
-        Node *temp{current->getParent()};
-        while (temp && current == temp->getRight())
+        Node *temp{current->get_parent()};
+        while (temp && current == temp->get_right().get())
         {
             current = temp;
-            temp = temp->getParent();
+            temp = temp->get_parent();
         }
         current = temp;
     }
+    //data = current->getData();
     return *this;
 }
-
-/*
-template<class KeyType, class ValueType, class CompareType>
-typename bst<KeyType,ValueType,CompareType>::iterator iterator::operator++(int) noexcept
-{
-    iterator iter{*this};
-    ++(*this);
-    return iter;
-}
-*/
-/*
-template<class KeyType, class ValueType, class CompareType>
-class bst<KeyType,ValueType, CompareType>::const_iterator : 
-public bst<KeyType,ValueType, CompareType>::iterator
-{
-	friend class bst;
-	/** Alias to make names shorter and intuitive
-	using iterator = bst<KeyType,ValueType, CompareType>::iterator;
-private:
-	/**
-	 * @brief Returns a constant pointer to the node pointed to by the iterator.
-	 
-	//const Node * getNode() const { return Iterator::getNode(); }
-public:
-	/** Uses the same method of the base class. 
-	using iterator::iterator;
-	/**
-	 * @brief Operator for deferencing a binary search tree iterator.
-	 * @return const std::pair<KeyType, ValueType>& Constant reference to current 
-	 * node's data in key, value format.
-	 
-	const std::pair<const KeyType, ValueType>& operator*() const 
-    { 
-        return iterator::operator*(); 
-    }
-};*/

@@ -65,22 +65,22 @@ class bst<KeyType, ValueType, CompareType>::Node
             return !(&this == b);
         }
 
-        std::pair<KeyType, ValueType> getData()
+        std::pair<KeyType, ValueType>& get_data()
         {
             return data;
         }
 
-        Node* getLeft()
+        std::unique_ptr<Node>& get_left()
         {
-            return left.get();
+            return left;
         }
 
-        Node* getRight()
+        std::unique_ptr<Node>& get_right()
         {
-            return right.get();
+            return right;
         }
 
-        Node* getParent()
+        Node* get_parent()
         {
             return parent;
         }
