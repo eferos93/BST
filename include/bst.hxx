@@ -377,18 +377,78 @@ bst<KeyType, ValueType, CompareType>::find(const KeyType &key) const
     }
 
     // key does not exist in tree
-    return end();
+    return cend();
 }
 
 template <class KeyType, class ValueType, class CompareType>
 void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
 {
-    Node* p = find(key).get_node();
-    if (!p)
+    Node* current = find(key).get_node();
+    //std::cout << p->data.first << std::endl;
+    if (!current)
     {
         return;
     }
+    Node* parent = current->parent;
 
+    //Case 1: current is a leaf
+    if (!current->left && !current->right)
+    {
+        if (current != root.get())
+        {
+            if (parent->left.get() == current)
+            {
+                parent->detach_left();
+            }
+            else
+            {
+                parent->detach_right();
+            }
+            
+        }
+        else
+        {
+            root.release();
+            root = nullptr;
+        }
+        free(current);
+    }
+    //Case 2
+    else if (current->left && current->right)
+    {
+        Node* succ = successor(current);
+        auto data = succ->data;
+        std::cout << succ->data.first << std::endl;
+        erase(succ->data.first);
+        current->data = data;
+
+    }
+    //Case 3
+    else
+    {
+        Node* child = (current->left) ? current->left.get() : current->right.get();
+
+        if (current != root.get())
+        {
+            if (current == parent->left.get())
+            {
+                parent->left.release();
+                parent->left.reset(child);
+            }
+            else
+            {
+                parent->right.release();
+                parent->right.reset(child);
+            }
+        }
+        else
+        {
+            root.release();
+            root.reset(child);
+        }
+        free(current);
+    }
+    /*
     Node* node;
     Node* subtree_root;
 
@@ -419,8 +479,10 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
     {
         if (node != p)
         {
-            p->data.first = node->data.first;
-            p->data.second = node->data.second;
+            //p->data.first = node->data.first;
+            //p->data.second = node->data.second;
+            *p = Node(*node);
+            //*p = *node;
         }
         root.release();
         root.reset(subtree_root);
@@ -429,8 +491,10 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
     {
         if (node != p)
         {
-            p->data.first = node->data.first;
-            p->data.second = node->data.second;
+            //p->data.first = node->data.first;
+            //p->data.second = node->data.second;
+            //*p = *node;
+            *p = Node(*node);
         }
         node->parent->left.release();
         node->parent->left.reset(subtree_root);
@@ -439,14 +503,18 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
     {
         if (node != p)
         {
-            p->data.first = node->data.first;
-            p->data.second = node->data.second;
+            //p->data.first = node->data.first;
+            //p->data.second = node->data.second;
+            *p=Node(*node);
         }
         node->parent->right.release();
         node->parent->right.reset(subtree_root);
     }
+
     delete node;
     delete subtree_root;
+    //delete p;
+    */
 }
 
 template <class KeyType, class ValueType, class CompareType>

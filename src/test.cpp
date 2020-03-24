@@ -53,28 +53,33 @@ int main() {
     //Testing begin and end 
     auto it = b.begin();
     std::cout << "\nKey value of begin " << it->first << ". Value of begin: " << it->second << std::endl; // It should be 0
-    
+    /*
     std::cout << "Testing const iterators" << std::endl;
     for (auto cit = b.cbegin(); cit != b.cend(); ++cit)
     {
         std::cout<< cit->first;
     }
-    std::cout << std::endl;
+    std::cout << std::endl;*/
     //++cit;
     //std::cout << "Key value of ++cbegin " << cit->first << " Value of ++cbegin: " << cit->second << std::endl; // It should be 1
     
    //Testing erase
     std::cout << "\nTesting erase" << std::endl;
+    std::cout << b << std::endl;
+    std::cout << "height before delete: " << b.height(b.getRoot()) << std::endl;
     //b.balance();
-    b.erase(4);
+    //b.erase(4);
+    std::cout << "height after delete: " << b.height(b.getRoot()) << std::endl;
     //b.erase(1);
     //b.erase(100);
     //b.erase(10);
     //b.erase(8);
     //b.erase(9);
     std::cout << "4 deleted" << std::endl;
+    auto iter = b.find(9);
+    std::cout << ((++iter) == b.end()) << std::endl;
     //std::cout << "\nAfter 4 and 9 deleted" << std::endl;
-    std::cout << b << std::endl;
+    //std::cout << b << std::endl;
 
     // Test copy and move constructors
     /*

@@ -101,6 +101,7 @@ __iterator<Node,KeyType,ValueType,Const>::operator++() noexcept
     }
     else if (current->get_right())
     {
+        std::cout << "here" << std::endl;
         current = current->get_right().get();
         //current = current->right.get();
         while (current->get_left())
@@ -111,9 +112,12 @@ __iterator<Node,KeyType,ValueType,Const>::operator++() noexcept
     }
     else
     {
+        //TODO fix the bug of infinite iteration
+        std::cout << "here (left)" << std::endl;
         Node *temp{current->get_parent()};
         while (temp && current == temp->get_right().get())
         {
+            std::cout << temp->get_data().first << std::endl;
             current = temp;
             temp = temp->get_parent();
         }
