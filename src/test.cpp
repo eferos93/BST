@@ -30,7 +30,7 @@ int main() {
     b.insert(std::pair<int,int>(3,3)); 
     std::cout << "\nAfter inserting existing key to tree"<< std::endl;
     std::cout << b << std::endl;
-    
+    /*
     // Emplace a key value 5 to tree
     b.emplace(std::pair<int,int>(5,5)); 
     std::cout << "\nAfter emplacing 5 to tree"<< std::endl;
@@ -41,7 +41,7 @@ int main() {
     std::cout << "\nThe value associated to key " << key2 << " is " << b[key2] << std::endl;
     std::cout << b[10] << std::endl;
     std::cout << b << std::endl;
-    
+    */
     //Testing find method
     auto f = b.find(3);
     std::cout << "\n" << f->first << " already exist in tree" << std::endl;
