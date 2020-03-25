@@ -94,12 +94,6 @@ public:
         return parent;
     }
 
-    void detach_children() noexcept
-    {
-        detach_right();
-        detach_left();
-    }
-
     void detach_right() noexcept
     {
         if (right)

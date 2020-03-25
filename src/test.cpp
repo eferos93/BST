@@ -66,21 +66,17 @@ int main() {
    //Testing erase
     std::cout << "\nTesting erase" << std::endl;
     std::cout << b << std::endl;
-    std::cout << "height before delete: " << b.height(b.getRoot()) << std::endl;
     //b.balance();
-    //b.erase(4);
-    std::cout << "height after delete: " << b.height(b.getRoot()) << std::endl;
-    //b.erase(1);
-    //b.erase(100);
-    //b.erase(10);
-    //b.erase(8);
-    //b.erase(9);
+    b.erase(4);
     std::cout << "4 deleted" << std::endl;
-    auto iter = b.find(9);
-    std::cout << ((++iter) == b.end()) << std::endl;
-    //std::cout << "\nAfter 4 and 9 deleted" << std::endl;
-    //std::cout << b << std::endl;
-
+    b.balance();
+    std::cout << "Balancing done" << std::endl;
+    std::cout << b << std::endl;
+    b.erase(6);
+    std::cout << "6 deleted\n" << b << std::endl;
+    b.erase(1);
+    std::cout << b << std::endl;
+    std::cout << b.getRoot()->get_data().first << std::endl;
     // Test copy and move constructors
     /*
     bst<int,int> copy_bst{b};

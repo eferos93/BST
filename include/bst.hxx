@@ -410,6 +410,8 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
         {
             root.release();
             root = nullptr;
+            //root.release();
+            //delete root;
         }
         free(current);
     }
@@ -418,7 +420,7 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
     {
         Node* succ = successor(current);
         auto data = succ->data;
-        std::cout << succ->data.first << std::endl;
+        //std::cout << succ->data.first << std::endl;
         erase(succ->data.first);
         current->data = data;
 
@@ -434,11 +436,13 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
             {
                 parent->left.release();
                 parent->left.reset(child);
+                parent->left->parent = parent;
             }
             else
             {
                 parent->right.release();
                 parent->right.reset(child);
+                parent->right->parent = parent;
             }
         }
         else
@@ -482,7 +486,7 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
             //p->data.first = node->data.first;
             //p->data.second = node->data.second;
             *p = Node(*node);
-            //*p = *node;
+            *p = *node;
         }
         root.release();
         root.reset(subtree_root);
@@ -493,7 +497,7 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
         {
             //p->data.first = node->data.first;
             //p->data.second = node->data.second;
-            //*p = *node;
+            *p = *node;
             *p = Node(*node);
         }
         node->parent->left.release();

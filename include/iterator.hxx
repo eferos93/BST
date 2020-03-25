@@ -15,12 +15,10 @@ class __iterator
 
     private:
         Node * current;
-        //value_type data;
 
     public:
         __iterator() = default;
         explicit __iterator(Node * node) noexcept : current{node}
-            //, data{current->getData()}
             {}
 
         //if Const = true, then value_type is const pair (const iterator)
@@ -91,7 +89,6 @@ class __iterator
 };
 
 template<class Node, class KeyType, class ValueType, bool Const>
-//template<bool Const>
 __iterator<Node,KeyType,ValueType,Const>& 
 __iterator<Node,KeyType,ValueType,Const>::operator++() noexcept
 {
@@ -101,28 +98,22 @@ __iterator<Node,KeyType,ValueType,Const>::operator++() noexcept
     }
     else if (current->get_right())
     {
-        std::cout << "here" << std::endl;
         current = current->get_right().get();
-        //current = current->right.get();
         while (current->get_left())
         {
-            //current = current->left.get();
             current = current->get_left().get();
         }
     }
     else
     {
-        //TODO fix the bug of infinite iteration
-        std::cout << "here (left)" << std::endl;
-        Node *temp{current->get_parent()};
+        Node *temp = current->get_parent();
         while (temp && current == temp->get_right().get())
         {
-            std::cout << temp->get_data().first << std::endl;
             current = temp;
             temp = temp->get_parent();
         }
         current = temp;
     }
-    //data = current->getData();
+
     return *this;
 }
