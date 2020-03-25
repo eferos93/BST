@@ -66,7 +66,6 @@ int main() {
    //Testing erase
     std::cout << "\nTesting erase" << std::endl;
     std::cout << b << std::endl;
-    //b.balance();
     b.erase(4);
     std::cout << "4 deleted" << std::endl;
     b.balance();
@@ -76,9 +75,17 @@ int main() {
     std::cout << "6 deleted\n" << b << std::endl;
     b.erase(1);
     std::cout << b << std::endl;
-    std::cout << b.getRoot()->get_data().first << std::endl;
+    bst<int,int> bst2{};
+    bst2.emplace(6,6);
+    bst2.emplace(5,5);
+    bst2.emplace(9,9);
+    bst2.emplace(8,8);
+    std::cout << bst2 << std::endl;
+    bst2.erase(6);
+    std::cout << bst2 << std::endl;
+
     // Test copy and move constructors
-    /*
+    
     bst<int,int> copy_bst{b};
     std::cout << "\nCopied tree" << std::endl;
     std::cout << copy_bst << std::endl;
@@ -91,5 +98,5 @@ int main() {
     b.clear();
     std::cout << "\nAfter clear" <<  b << std::endl;
     std::cout << b << std::endl;
-    */
+    
 }

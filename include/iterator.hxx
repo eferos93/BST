@@ -4,9 +4,11 @@ template<class Node, class KeyType, class ValueType, bool Const>
 class __iterator
 {
     //friend class bst;
+    //friend class Node;
     public:
-        //using Node = typename bst<KeyType, ValueType, CompareType>::Node;
-        using pair_type = std::pair<KeyType, ValueType>;
+        using pair_type = std::pair<const KeyType, ValueType>;
+        //if Const = true, then value_type is const pair (const iterator)
+        // otherwise it is just pair
         using value_type = typename std::conditional<Const, const pair_type, pair_type>::type;
         using reference = value_type&;
         using pointer = value_type*;
@@ -21,10 +23,6 @@ class __iterator
         explicit __iterator(Node * node) noexcept : current{node}
             {}
 
-        //if Const = true, then value_type is const pair (const iterator)
-        // otherwise it is just pair
-        
-
         /**
          * @brief Operator *iter
          * @return A reference to the tuple (keytype, valuetype)
@@ -32,7 +30,8 @@ class __iterator
         reference operator*() const noexcept
         {
             return current->get_data();
-            //return current->data;
+            //std::pair<KeyType, ValueType> data = current->data;
+            //return data;
         }
 
         pointer operator->() const noexcept

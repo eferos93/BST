@@ -1,6 +1,8 @@
 /**
  * bst.hxx file
- * @authors: Eros Fabrici, Dogan Can Demirbilek , ....
+ * @author: Eros Fabrici
+ * @author: Dogan Can Demirbilek
+ * @author: Alessandro Scardoni
  **/
 #include <iostream>
 #include <utility>
@@ -15,7 +17,6 @@
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
 class bst 
 {
-    //friend class __iterator;
     private:
         class Node;
         std::unique_ptr<Node> root;
@@ -44,7 +45,6 @@ class bst
 
     public:
         CompareType comparator;
-        //class __iterator<Const>;
         using iterator = __iterator<Node,KeyType,ValueType,false>;
         using const_iterator = __iterator<Node,KeyType,ValueType,true>;
 
@@ -76,47 +76,76 @@ class bst
         bst(bst&& bst) noexcept : 
             root{std::move(bst.root)} {}
         
+        /**
+         * @brief Method that generates an iterator
+         * @return An iterator to the first element of the bst
+         *         according to the in-order visit
+         */
         iterator begin() noexcept
         {
             return iterator{leftmost(root.get())};
         }
-        
+
+        /**
+         * @brief Method that generates a const-iterator
+         * @return A const-iterator to the first element of the bst
+         *         according to the in-order visit
+         */
         const_iterator begin() const noexcept
         {
-            //return iterator{leftmost(root.get())};
             const_iterator it{leftmost(root.get())};
             return it;
         }
 
+        /**
+         * @brief Method that generates a const-iterator
+         * @return A const-iterator to the first element of the bst
+         *         according to the in-order visit
+         */
         const_iterator cbegin() const noexcept
         {
             const_iterator it{leftmost(root.get())};
             return it;
         }
 
+        /**
+         * @brief Method that returns an iterator to nullptr
+         * @return Iterator to nullptr
+         */
         iterator end() noexcept { return iterator{nullptr}; }
 
+        /**
+         * @brief Method that returns a const-iterator to nullptr
+         * @return Const-iterator to nullptr
+         */
         const_iterator end() const noexcept
         {
-            //return iterator{nullptr};
             const_iterator it{nullptr};
             return it;
         }
-        
+
+        /**
+         * @brief Method that returns a const-iterator to nullptr
+         * @return Const-iterator to nullptr
+         */
         const_iterator cend() const noexcept
         {         
             const_iterator it{nullptr};    
             return it; 
         }
-        
-        //Methods
 
         /**
          *  @brief Insert the node of given key
          *  @param data Pair data to be inserted
-         *  @return a pair<iterator, bool>
+         *  @return A pair<iterator, bool>
          */
-        std::pair<iterator, bool> insert(const std::pair<KeyType, ValueType>& data); 
+        std::pair<iterator, bool> insert(const std::pair<KeyType, ValueType>& data);
+
+        /**
+         *  @brief Insert the node of given key
+         *  @param data r-value of the pair data to be inserted
+         *  @return A pair<iterator, bool>
+         */
         std::pair<iterator, bool> insert(std::pair<KeyType, ValueType>&& data);      
 
         /**
@@ -134,23 +163,31 @@ class bst
         /**
          *  @brief Clears all the elements of the tree
          */
-        void clear() { root.reset(); }
+        void clear() noexcept { root.reset(); }
 
         /**
-         *  @brief Find the node of given key
-         *  @param key The key value to be found in bst
+         * @brief Find the node of given key
+         * @param key The key value to be found in bst
+         * @return Iterator to the found node (to nullptr if the node is not found)
          */
         iterator find(const KeyType& key);
+
+        /**
+         * @brief Find the node of given key
+         * @param key The key value to be found in bst
+         * @return Const-iterator to the found node (to nullptr if the node is not found)
+         */
         const_iterator find(const KeyType& key) const;
 
         /**
-         * @brief given a key, find the node and delete the node
+         * @brief Given a key, find the node and delete the node
          * @param key The key of the node to be found and deleted
          */
         void erase(const KeyType& key);
 
         /**
-         * @brief method to get the root of tree
+         * @brief Method to get the root of tree
+         * @return Pointer to Node
          */
         Node* getRoot() 
         {
@@ -158,22 +195,23 @@ class bst
         }
 
         /**
-         *  @brief auxiliary recursive function to build a bst
-         *  @param nodes containers of nodes
-         *  @param start beginning position
-         *  @param end ending position
+         *  @brief Auxiliary recursive function to build a bst
+         *  @param nodes Containers of nodes
+         *  @param start Beginning position
+         *  @param end Ending position
          */ 
         void buildTree(std::vector<std::pair<KeyType,ValueType>> &nodes, int start, int end);
         
         /**
-         * @brief find the height of tree
-         * @param node pointer to root node of tree
+         * @brief Method to find the height of tree
+         * @param node Pointer to tree's root
+         * @return The height of the tree
          */
         int height(Node* node); 
 
         /**
-         * @brief find if tree is balanced
-         * @param node pointer to root node of tree
+         * @brief Find if tree is balanced
+         * @param node Pointer to root node of tree
          * @return 1 if tree is balanced, otherwise 0
          */
         bool isBalanced(Node* node);
@@ -244,7 +282,8 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<KeyType, ValueType>
             if (!current->left)
             {
                 current->left = std::make_unique<Node>(
-                    data, current);
+                    data, current
+                );
                 iterator it{current->left.get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -256,7 +295,8 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<KeyType, ValueType>
             if (!current->right)
             {
                 current->right = std::make_unique<Node>(
-                    data, current);
+                    data, current
+                );
                 iterator it{current->right.get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -384,7 +424,6 @@ template <class KeyType, class ValueType, class CompareType>
 void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
 {
     Node* current = find(key).get_node();
-    //std::cout << p->data.first << std::endl;
     if (!current)
     {
         return;
@@ -396,6 +435,7 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
     {
         if (current != root.get())
         {
+            //if current is left child of its parent
             if (parent->left.get() == current)
             {
                 parent->detach_left();
@@ -406,26 +446,27 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
             }
             
         }
+        //if current is the root
         else
         {
             root.release();
             root = nullptr;
-            //root.release();
-            //delete root;
         }
         free(current);
     }
-    //Case 2
+    //Case 2: current has both right and left child
     else if (current->left && current->right)
     {
+        //find current's successor, store its data in current
+        //and erase it
         Node* succ = successor(current);
-        auto data = succ->data;
-        //std::cout << succ->data.first << std::endl;
+        //auto data = succ->data;
+        succ->swap(current);
         erase(succ->data.first);
-        current->data = data;
+        //current->data = std::move(std::pair<const KeyType, ValueType>(data.first, data.second));
 
     }
-    //Case 3
+    //Case 3: current has only one child
     else
     {
         Node* child = (current->left) ? current->left.get() : current->right.get();
@@ -435,90 +476,24 @@ void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
             if (current == parent->left.get())
             {
                 parent->left.release();
+                child->parent = parent;
                 parent->left.reset(child);
-                parent->left->parent = parent;
             }
             else
             {
                 parent->right.release();
+                child->parent = parent;
                 parent->right.reset(child);
-                parent->right->parent = parent;
             }
         }
         else
         {
             root.release();
+            child->parent = nullptr;
             root.reset(child);
         }
         free(current);
     }
-    /*
-    Node* node;
-    Node* subtree_root;
-
-    if (p->left && p->right)
-    {
-        node = successor(p);
-    }
-    else
-    {
-        node = p;
-    }
-
-    if (node->left)
-    {
-        subtree_root = node->left.get();
-    }
-    else
-    {
-        subtree_root = node->right.get();
-    }
-
-    if (subtree_root)
-    {
-        subtree_root->parent = node->parent;
-    }
-
-    if (!node->parent)
-    {
-        if (node != p)
-        {
-            //p->data.first = node->data.first;
-            //p->data.second = node->data.second;
-            *p = Node(*node);
-            *p = *node;
-        }
-        root.release();
-        root.reset(subtree_root);
-    }
-    else if (node == node->parent->left.get())
-    {
-        if (node != p)
-        {
-            //p->data.first = node->data.first;
-            //p->data.second = node->data.second;
-            *p = *node;
-            *p = Node(*node);
-        }
-        node->parent->left.release();
-        node->parent->left.reset(subtree_root);
-    }
-    else
-    {
-        if (node != p)
-        {
-            //p->data.first = node->data.first;
-            //p->data.second = node->data.second;
-            *p=Node(*node);
-        }
-        node->parent->right.release();
-        node->parent->right.reset(subtree_root);
-    }
-
-    delete node;
-    delete subtree_root;
-    //delete p;
-    */
 }
 
 template <class KeyType, class ValueType, class CompareType>
