@@ -17,15 +17,18 @@
 template<class KeyType, class ValueType, class CompareType = std::less<KeyType>>
 class bst 
 {
+    
     private:
         class Node;
         std::unique_ptr<Node> root;
+        using iterator = __iterator<Node,KeyType,ValueType,false>;
+        using const_iterator = __iterator<Node,KeyType,ValueType,true>;
         /**
          * @brief Given a node in a tree, returns its successor
          * @param node A pointer to a node
          * @return Pointer to node's successor
          */
-        Node * successor(Node * node);
+        Node * successor(Node * node) const;
 
         /**
          * @brief Given a pointer to a node, find the leftmost element in the sub-tree
@@ -43,11 +46,26 @@ class bst
          */
         void copy(const std::unique_ptr<Node> &node);
 
+        void swap(Node* node1, Node* node2);
+
+        void erase_aux(const KeyType& key, Node* node);
+
+        /**
+         * @brief Find the node of given key
+         * @param key The key value to be found in bst
+         * @return Iterator to the found node (to nullptr if the node is not found)
+         */
+        iterator find_aux(const KeyType& key, Node *current);
+
+        /**
+         * @brief Find the node of given key
+         * @param key The key value to be found in bst
+         * @return Const-iterator to the found node (to nullptr if the node is not found)
+         */
+        const_iterator find_aux(const KeyType& key, Node *current) const;
     public:
         CompareType comparator;
-        using iterator = __iterator<Node,KeyType,ValueType,false>;
-        using const_iterator = __iterator<Node,KeyType,ValueType,true>;
-
+        
         /**
          * @brief Default constructor
          */
@@ -165,25 +183,25 @@ class bst
          */
         void clear() noexcept { root.reset(); }
 
-        /**
-         * @brief Find the node of given key
-         * @param key The key value to be found in bst
-         * @return Iterator to the found node (to nullptr if the node is not found)
-         */
-        iterator find(const KeyType& key);
 
-        /**
-         * @brief Find the node of given key
-         * @param key The key value to be found in bst
-         * @return Const-iterator to the found node (to nullptr if the node is not found)
-         */
-        const_iterator find(const KeyType& key) const;
+        iterator find(const KeyType& key)
+        {
+            return find_aux(key, root.get());
+        }
+
+        const_iterator find(const KeyType& key) const
+        {
+            return find_aux(key, root.get());
+        }
 
         /**
          * @brief Given a key, find the node and delete the node
          * @param key The key of the node to be found and deleted
          */
-        void erase(const KeyType& key);
+        void erase(const KeyType& key)
+        {
+            erase_aux(key, root.get());
+        }
 
         /**
          * @brief Method to get the root of tree
@@ -226,7 +244,7 @@ class bst
 };
 
 template <class KeyType, class ValueType, class CompareType>
-typename bst<KeyType,ValueType,CompareType>::Node * bst<KeyType,ValueType,CompareType>::successor(Node * node)
+typename bst<KeyType,ValueType,CompareType>::Node * bst<KeyType,ValueType,CompareType>::successor(Node * node) const
 {
     if (node->right)
     {
@@ -366,9 +384,14 @@ bst<KeyType, ValueType, CompareType>::insert(std::pair<KeyType, ValueType> &&dat
 
 template <class KeyType, class ValueType, class CompareType>
 typename bst<KeyType, ValueType, CompareType>::iterator 
-bst<KeyType, ValueType, CompareType>::find(const KeyType &key)
+bst<KeyType, ValueType, CompareType>::find_aux(const KeyType &key, Node *current)
 {
-    Node *current = root.get();
+    //Node *current = root.get();
+    if (current)
+    {
+        if (key == 6)
+        std::cout << "Find method: " << root->get_right()->get_left()->get_data().first << std::endl;
+    }
     // until current equals to null pointer
     while (current)
     {
@@ -394,9 +417,10 @@ bst<KeyType, ValueType, CompareType>::find(const KeyType &key)
 
 template <class KeyType, class ValueType, class CompareType>
 typename bst<KeyType, ValueType, CompareType>::const_iterator
-bst<KeyType, ValueType, CompareType>::find(const KeyType &key) const
+bst<KeyType, ValueType, CompareType>::find_aux(const KeyType &key, Node *current) const
 {
-    Node *current = root.get();
+    //Node *current = root.get();
+    
     // until current equals to null pointer
     while (current)
     {
@@ -421,78 +445,191 @@ bst<KeyType, ValueType, CompareType>::find(const KeyType &key) const
 }
 
 template <class KeyType, class ValueType, class CompareType>
-void bst<KeyType, ValueType, CompareType>::erase(const KeyType &key)
+void bst<KeyType, ValueType, CompareType>::swap(Node* node1, Node* node2)
 {
-    Node* current = find(key).get_node();
+    Node *n1_left, *n1_right, *n1_parent, *n2_left, *n2_right, *n2_parent;
+
+    //Detach node1's children
+    n1_left = node1->detach_left();
+    n1_right = node1->detach_right();
+    n1_parent = node1->get_parent();
+
+    //detach node1 from its parent. If it has no parent (it is root)
+    //we release the ownership of root
+    if (node1->is_right())
+    {
+        n1_parent->detach_right();
+    }
+    else if (node1->is_left())
+    {
+        std::cout << "node1 is left" << std::endl;
+        n1_parent->detach_left();
+    }
+    else
+    {
+        root.release();
+    }
+    
+    //Detach node2's children
+    n2_left = node2->detach_left();
+    n2_right = node2->detach_right();
+    n2_parent = node2->get_parent();
+
+    //detach node2 from its parent. If it has no parent (it is root)
+    //we release the ownership of root
+    if (node2->is_right())
+    {
+        n2_parent->detach_right();
+    }
+    else if (node2->is_left())
+    {
+        n2_parent->detach_left();
+    }
+    else
+    {
+        root.release();
+    }
+    
+    
+    if (n1_parent)
+    {   
+        //to check whether node1 was left or right child we 
+        if (comparator(node2->get_data().first, n1_parent->get_data().first))
+        {
+            n1_parent->set_left(node2);
+            //n1_parent->left->set_left(n1_left);
+            //n1_parent->left->set_right(n1_right);
+        }
+        else
+        {
+            n1_parent->set_right(node2);
+            //n1_parent->right->set_left(n1_left);
+            //n1_parent->right->set_right(n1_right);
+        }
+        //}
+        
+    }
+    else
+    {
+        root.reset(node2);
+        //root->set_left(n1_left);
+        //root->set_right(n1_right);
+    }
+    node2->set_left(n1_left);
+    node2->set_right(n1_right);
+
+    if (n2_parent)
+    {
+        //if (n2_parent != n1)
+        //{
+            if (comparator(node1->get_data().first, n2_parent->get_data().first))
+            {
+                n2_parent->set_left(node1);
+                //n2_parent->left->set_left(n2_left);
+                //n2_parent->left->set_right(n2_right);
+            }
+            else
+            {
+                n2_parent->set_right(node1);
+                //n2_parent->right->set_left(n2_left);
+                //n2_parent->right->set_right(n2_right);
+            }
+        //}
+        
+    }
+    else
+    {
+        root.reset(node1);
+        //root->set_left(n2_left);
+        //root->set_right(n2_right);
+    }
+    node1->set_left(n2_left);
+    node1->set_right(n2_right);
+}
+
+template <class KeyType, class ValueType, class CompareType>
+void bst<KeyType, ValueType, CompareType>::erase_aux(const KeyType &key, Node* node)
+{
+    
+    Node* current = find_aux(key, node).get_node();
     if (!current)
     {
         return;
     }
     Node* parent = current->parent;
-
+    if (parent)
+    {
+        std::cout << "parent is: " <<parent->get_data().first << std::endl;
+    }
+    std::cout << key << std::endl;
     //Case 1: current is a leaf
     if (!current->left && !current->right)
     {
+        //std::cout << "first branch" << std::endl;
         if (current != root.get())
         {
             //if current is left child of its parent
             if (parent->left.get() == current)
             {
-                parent->detach_left();
+                parent->destroy_left();
             }
             else
             {
-                parent->detach_right();
+                parent->destroy_right();
             }
             
         }
         //if current is the root
         else
         {
-            root.release();
-            root = nullptr;
+            root.reset();
+            return;
         }
-        free(current);
+        //free(current);
     }
     //Case 2: current has both right and left child
     else if (current->left && current->right)
     {
-        //find current's successor, store its data in current
-        //and erase it
         Node* succ = successor(current);
-        //auto data = succ->data;
-        succ->swap(current);
-        erase(succ->data.first);
-        //current->data = std::move(std::pair<const KeyType, ValueType>(data.first, data.second));
 
+        //TODO FIX BUG -> implement auxilary func find 
+        swap(succ, current);
+        std::cout << "SUCCESSOR" << succ->get_data().first << std::endl;
+        erase_aux(key, current->get_parent());
     }
     //Case 3: current has only one child
     else
     {
-        Node* child = (current->left) ? current->left.get() : current->right.get();
+        Node* child = (current->left) ? current->detach_left() : current->detach_right();
 
         if (current != root.get())
         {
             if (current == parent->left.get())
             {
-                parent->left.release();
-                child->parent = parent;
-                parent->left.reset(child);
+                //parent->left.release();
+                //child->parent = parent;
+                //parent->left.reset(child);
+                parent->detach_left();
+                parent->set_left(child);
             }
             else
             {
-                parent->right.release();
-                child->parent = parent;
-                parent->right.reset(child);
+                //parent->right.release();
+                //child->parent = parent;
+                //parent->right.reset(child);
+                parent->detach_right();
+                parent->set_right(child);
             }
         }
         else
         {
+            root->detach_children();
             root.release();
             child->parent = nullptr;
             root.reset(child);
         }
-        free(current);
+        //free(current);
+        delete current;
     }
 }
 

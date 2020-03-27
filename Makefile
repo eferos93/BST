@@ -4,7 +4,7 @@ DEFINES = NONE # PTREE for tree printing
 CXX = c++
 TESTSRC = src/test.cpp
 BENCHSRC = src/benchmark.cpp
-CXXFLAGS = -std=c++14 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra
 IFLAGS = -I include
 
 all: $(TEST) $(BENCHMARK)
