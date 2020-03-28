@@ -12,7 +12,7 @@ int main() {
         if(i!=5)
             b.insert(std::pair<int,int>(i,i));
     }
-    /*
+    
     std::cout << "Inserted int pairs from 1 to 9\n" << std::endl;
     std::cout << b << std::endl;
 
@@ -23,7 +23,7 @@ int main() {
     
     std::cout << "\nTree is balanced?\n"<< (b.isBalanced(b.getRoot()) ? "Yes\n" : "No\n");
     std::cout << "Height of tree: "<< b.height(b.getRoot())<< std::endl;
-    */
+    
     std::cout << "\n" <<b << std::endl;
     
     // Inserting a node with a key already present: expect no change
@@ -88,7 +88,7 @@ int main() {
     
     //bool check = !a->get_left() && !a->get_right();
     //std::cout << check << std::endl;
-    /*b.erase(1);
+    b.erase(1);
     std::cout << b << std::endl;
     bst<int,int> bst2{};
     bst2.emplace(6,6);
@@ -102,6 +102,7 @@ int main() {
     // Test copy and move constructors
     
     bst<int,int> copy_bst{b};
+    std::cout << "original Tree\n" << b << std::endl; 
     std::cout << "\nCopied tree" << std::endl;
     std::cout << copy_bst << std::endl;
 
@@ -113,5 +114,5 @@ int main() {
     b.clear();
     std::cout << "\nAfter clear" <<  b << std::endl;
     std::cout << b << std::endl;
-    */
+    
 }

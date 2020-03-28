@@ -207,6 +207,19 @@ public:
     {
         if (!left)
         {
+            left = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(data), parent);
+        }
+        else
+        {
+            throw std::invalid_argument("Left node already exists. It is not possible to attach a new one.");
+        }
+        
+    }
+
+    void set_left(const std::pair<const KeyType, ValueType> &data, Node *parent)
+    {
+        if (!left)
+        {
             left = std::make_unique<Node>(data, parent);
         }
         else
@@ -248,6 +261,18 @@ public:
     }
 
     void set_right(std::pair<const KeyType, ValueType> &&data, Node *parent)
+    {
+        if (!right)
+        {
+            right = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(data), parent);
+        }
+        else
+        {
+            throw std::invalid_argument("Right node already exists. It is not possible to attach a new one.");
+        }
+    }
+
+    void set_right(const std::pair<const KeyType, ValueType> &data, Node *parent)
     {
         if (!right)
         {

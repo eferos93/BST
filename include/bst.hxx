@@ -284,9 +284,9 @@ void bst<KeyType,ValueType,CompareType>::copy(const std::unique_ptr<bst<KeyType,
 {
     if (node)
     {
-        insert(node->data);
-        copy(node->left);
-        copy(node->right);
+        insert(std::forward<const std::pair<const KeyType, ValueType>>(node->get_data()));
+        copy(node->get_left());
+        copy(node->get_right());
     }
 }
 
@@ -303,7 +303,7 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<const KeyType, Valu
         {
             if (!current->get_left())
             {
-                current->set_left(std::move(data), current);
+                current->set_left(data, current);
                 iterator it{current->get_left().get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -314,7 +314,7 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<const KeyType, Valu
         {
             if (!current->get_right())
             {
-                current->set_right(std::move(data), current);
+                current->set_right(data, current);
                 iterator it{current->get_right().get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -330,7 +330,7 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<const KeyType, Valu
     }
 
     //current is root and it's nullptr
-    root = std::make_unique<Node>(std::move(data));
+    root = std::make_unique<Node>(data);
     iterator it{root.get()};
     return std::pair<iterator, bool>{it, true};
 }
@@ -653,7 +653,7 @@ bool bst<KeyType,ValueType,CompareType>::isBalanced(typename bst<KeyType, ValueT
     lh = height(node->get_left().get());
     rh = height(node->get_right().get());
 
-    return abs(lh - rh) <= 1 && isBalanced(node->left.get()) && isBalanced(node->right.get());
+    return abs(lh - rh) <= 1 && isBalanced(node->get_left().get()) && isBalanced(node->get_right().get());
 }
 
 template <class KeyType, class ValueType, class CompareType>
