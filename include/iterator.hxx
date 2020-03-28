@@ -1,10 +1,9 @@
 #include <iterator>
 
-template<class Node, class KeyType, class ValueType, bool Const>
+template<class Node, class KeyType, class ValueType, class CompareType, bool Const>
 class __iterator
 {
-    //friend class bst;
-    //friend class Node;
+    friend class bst<KeyType, ValueType, CompareType>;
     public:
         using pair_type = std::pair<const KeyType, ValueType>;
         //if Const = true, then value_type is const pair (const iterator)
@@ -17,6 +16,10 @@ class __iterator
 
     private:
         Node * current;
+        Node * get_node() noexcept
+        {
+            return current;
+        }
 
     public:
         __iterator() = default;
@@ -80,16 +83,11 @@ class __iterator
         {
             return !(left.current == right.current);
         }
-
-        Node * get_node()
-        {
-            return current;
-        }
 };
 
-template<class Node, class KeyType, class ValueType, bool Const>
-__iterator<Node,KeyType,ValueType,Const>& 
-__iterator<Node,KeyType,ValueType,Const>::operator++() noexcept
+template<class Node, class KeyType, class ValueType, class CompareType, bool Const>
+__iterator<Node,KeyType,ValueType,CompareType,Const>& 
+__iterator<Node,KeyType,ValueType,CompareType,Const>::operator++() noexcept
 {
     if (!current)
     {

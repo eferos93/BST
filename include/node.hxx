@@ -6,11 +6,10 @@
 //#include <iostream>
 //#include <memory>
 #include <cassert> 
+#include <exception>
 template <class KeyType, class ValueType, class CompareType>
 class bst<KeyType, ValueType, CompareType>::Node
 {
-    friend class bst;
-
 private:
     /**
          * tuple containing the key which is an unique identifier for the node
@@ -65,16 +64,18 @@ public:
      * @brief Move Assignment
      * @param node r-value reference to a Node
      */
-    /*Node& operator=(Node &&node) noexcept
+    Node& operator=(Node &&node) noexcept
     {
         data = std::move(node.data);
         left = std::move(node.left);
         right = std::move(node.right);
         parent = std::move(node.parent);
         return *this;
-    }*/
+    }
     
+    //We do not need a copy constructor
     Node& operator=(const Node&) = delete;
+    
     /**
      * @brief equality operator
      * @param b pointer to another node to be checked
@@ -176,13 +177,22 @@ public:
      * The program is aborted also if left is not null.
      * If new_node is null, then left is freed and set to null.
      */
-    void set_left(Node* new_node)
+    void set_left(Node *new_node)
     {
         //avoid creation of cycles
-        assert( !(parent && parent == new_node) );
+        if (parent && parent == new_node)
+        {
+            throw std::invalid_argument("Parent is equal to the node it is to be inserted");
+        }
+
         if (new_node)
         {
-            assert( !left ); //can be setted iff left is null
+             //can be setted iff left is null
+            if (left)
+            {
+                throw std::invalid_argument("Left node already exists. It is not possible to attach a new one.");
+            }
+
             left.reset(new_node);
             left->parent = this;
         }
@@ -193,6 +203,18 @@ public:
         
     }
 
+    void set_left(std::pair<const KeyType, ValueType> &&data, Node *parent)
+    {
+        if (!left)
+        {
+            left = std::make_unique<Node>(data, parent);
+        }
+        else
+        {
+            throw std::invalid_argument("Left node already exists. It is not possible to attach a new one.");
+        }
+        
+    }
     /**
      * @brief Setter for the right node
      * @param new_node Pointer to the new_node to be inserted
@@ -204,10 +226,17 @@ public:
     void set_right(Node* new_node)
     {
         //avoid cycle
-        assert( !parent || parent != new_node );
+        if (parent && parent == new_node)
+        {
+            throw std::invalid_argument("Parent is equal to the node it is to be inserted");
+        }
+
         if (new_node)
         {
-            assert( !right ); //can be setted iff right is null
+            if (right)
+            {
+                throw std::invalid_argument("Right node already exists. It is not possible to attach a new one.");
+            }
             right.reset(new_node);
             right->parent = this;
         }
@@ -216,6 +245,27 @@ public:
             destroy_right();
         }
         
+    }
+
+    void set_right(std::pair<const KeyType, ValueType> &&data, Node *parent)
+    {
+        if (!right)
+        {
+            right = std::make_unique<Node>(data, parent);
+        }
+        else
+        {
+            throw std::invalid_argument("Right node already exists. It is not possible to attach a new one.");
+        }
+    }
+
+    /**
+     * @brief Setter for the parent
+     * @param node Pointer to the new Node's parent
+     */
+    void set_parent(Node * node) noexcept
+    {
+        parent = node;
     }
 
     /**
@@ -228,7 +278,8 @@ public:
         Node* ptr = nullptr;
         if (right)
         {
-            right->parent = nullptr;
+            //right->parent = nullptr;
+            right->set_parent(nullptr);
             ptr = right.release();
             right = nullptr;
         }
@@ -246,7 +297,8 @@ public:
         Node* ptr = nullptr;
         if (left)
         {
-            left->parent = nullptr;
+            //left->parent = nullptr;
+            left->set_parent(nullptr);
             ptr = left.release();
             left = nullptr;
         }
@@ -284,72 +336,4 @@ public:
         }
         
     }
-    
-    /*void swap(Node* other) noexcept
-    {
-        auto p_other = other->parent;
-        auto l_other = other->left.release();
-        auto r_other = other->right.release();
-        
-
-        auto p_self = parent;
-        auto r_self = right.release();
-        auto l_self = left.release();
-
-        right.reset(r_other);
-        if (right)
-        {
-            right->parent = this;
-        }
-        left.reset(l_other);
-        if (left)
-        {
-            left->parent = this;
-        }
-        
-        //seg-fault here---------------------
-        parent = p_other;
-        std::cout << "here" << (parent == nullptr) <<std::endl;
-        if (p_other) 
-        {
-            if (p_other->right.get() == other)
-            {
-                p_other->right.release();
-                p_other->right.reset(this);
-            }
-            else
-            {
-                p_other->left.release();
-                p_other->left.reset(this);
-            }
-        }
-
-        //-------------------------------
-        std::cout << "I made it!" << std::endl;
-        other->right.reset(r_self);
-        if (other->right)
-        {
-            other->right->parent = other;
-        }
-        other->left.reset(l_self);
-        if (other->left)    
-        {
-            other->left->parent = other;
-        }
-        
-        other->parent = p_self;
-        if (p_self)
-        {
-            if(p_self->right.get() == this)
-            {
-                p_self->right.release();
-                p_self->right.reset(other);
-            }
-            else
-            {
-                p_self->left.release();
-                p_self->left.reset(other);
-            }
-        }
-    }*/
 };
