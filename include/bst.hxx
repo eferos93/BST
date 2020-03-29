@@ -51,13 +51,24 @@ class bst
          */
         void copy(const std::unique_ptr<Node> &node);
 
-        void swap(Node* node1, Node* node2);
+        /**
+         * @brief Function that swapes the two nodes inside the tree topology
+         * @param successor The first node.
+         * @param current The second node.
+         */
+        void swap(Node* successor, Node* current);
 
+        /**
+         * @brief Auxiliary recursive function for erasing a node in tree rooted in the node passed
+         * @param key The key of the node to be deleted
+         * @param node Pointer to the root of the (sub-)tree to search the node in.
+         */
         void erase_aux(const KeyType& key, Node* node);
 
         /**
          * @brief Find the node of given key
          * @param key The key value to be found in bst
+         * @param current Pointer to the root of the (sub-)tree to search the node in.
          * @return Iterator to the found node (to nullptr if the node is not found)
          */
         iterator find_aux(const KeyType& key, Node *current);
@@ -65,6 +76,7 @@ class bst
         /**
          * @brief Find the node of given key
          * @param key The key value to be found in bst
+         * @param current Pointer to the root of the (sub-)tree to search the node in.
          * @return Const-iterator to the found node (to nullptr if the node is not found)
          */
         const_iterator find_aux(const KeyType& key, Node *current) const;
@@ -188,11 +200,21 @@ class bst
          */
         void clear() noexcept { root.reset(); }
 
+        /**
+         * @brief Function that searches an element inside the tree and returns an iterator.
+         * @param key The key of the node to be searched for.
+         * @return If the node is found, an iterator pointing to it, an empty iterator otherwise.
+         */
         iterator find(const KeyType& key)
         {
             return find_aux(key, root.get());
         }
 
+        /**
+         * @brief Function that searches an element inside the tree and returns a const_iterator.
+         * @param key The key of the node to be searched for.
+         * @return If the node is found, a const_iterator pointing to it, an empty iterator otherwise.
+         */
         const_iterator find(const KeyType& key) const
         {
             return find_aux(key, root.get());
@@ -222,7 +244,7 @@ class bst
          *  @param start Beginning position
          *  @param end Ending position
          */ 
-        void buildTree(std::vector<std::pair<KeyType,ValueType>> &nodes, int start, int end);
+        void buildTree(std::vector<std::pair<const KeyType,ValueType>> &nodes, int start, int end);
         
         /**
          * @brief Method to find the height of tree
@@ -243,7 +265,18 @@ class bst
          */ 
         void balance();
 
+        /**
+         * @brief Operator [] that returns the Value contained by the node to be searched.
+         * @param key Key to be searched in the tree.
+         * @return Value contained by the node with the key passed.
+         */
         ValueType& operator[](const KeyType& key) noexcept;
+
+        /**
+         * @brief Operator [] that returns the Value contained by the node to be searched.
+         * @param key Key to be searched in the tree.
+         * @return Value contained by the node with the key passed.
+         */
         ValueType& operator[](KeyType&& key) noexcept;
 };
 /*
@@ -296,14 +329,13 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<const KeyType, Valu
 {
     // If tree isn't empty, cur node will be created
     Node *current = root.get();
-
     while (current)
     {
         if (comparator(data.first, current->get_data().first))
         {
             if (!current->get_left())
             {
-                current->set_left(data, current);
+                current->set_left(data);
                 iterator it{current->get_left().get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -314,7 +346,7 @@ bst<KeyType, ValueType, CompareType>::insert(const std::pair<const KeyType, Valu
         {
             if (!current->get_right())
             {
-                current->set_right(data, current);
+                current->set_right(data);
                 iterator it{current->get_right().get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -341,7 +373,7 @@ bst<KeyType, ValueType, CompareType>::insert(std::pair<const KeyType, ValueType>
 {
     // If tree isn't empty, cur node will be created
     Node *current = root.get();
-    //using pair_type = std::pair<const KeyType, ValueType>;
+    using pair_type = std::pair<const KeyType, ValueType>;
 
     while (current)
     {
@@ -351,7 +383,7 @@ bst<KeyType, ValueType, CompareType>::insert(std::pair<const KeyType, ValueType>
             {
                 //current->left = std::make_unique<Node>(
                 //    std::forward<pair_type>(data), current);
-                current->set_left(std::move(data), current);
+                current->set_left(std::forward<pair_type>(data));
                 iterator it{current->get_left().get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -364,7 +396,7 @@ bst<KeyType, ValueType, CompareType>::insert(std::pair<const KeyType, ValueType>
             {
                 //current->right = std::make_unique<Node>(
                 //    std::forward<pair_type>(data), current);
-                current->set_right(std::move(data), current);
+                current->set_right(std::forward<pair_type>(data));
                 iterator it{current->get_right().get()};
                 return std::pair<iterator, bool>{it, true};
             }
@@ -380,7 +412,7 @@ bst<KeyType, ValueType, CompareType>::insert(std::pair<const KeyType, ValueType>
     }
 
     //current is root and it's nullptr
-    root = std::make_unique<Node>(std::move(data));
+    root = std::make_unique<Node>(std::forward<pair_type>(data));
     iterator it{root.get()};
     return std::pair<iterator, bool>{it, true};
 }
@@ -440,87 +472,96 @@ bst<KeyType, ValueType, CompareType>::find_aux(const KeyType &key, Node *current
 }
 
 template <class KeyType, class ValueType, class CompareType>
-void bst<KeyType, ValueType, CompareType>::swap(Node* node1, Node* node2)
+void bst<KeyType, ValueType, CompareType>::swap(Node* successor, Node* current)
 {
-    Node *n1_left, *n1_right, *n1_parent, *n2_left, *n2_right, *n2_parent;
+    Node *succ_left, *succ_right, *succ_parent, *curr_left, *curr_right, *curr_parent;
 
-    //Detach node1's children
-    n1_left = node1->detach_left();
-    n1_right = node1->detach_right();
-    n1_parent = node1->get_parent();
+    //Detach successor's children
+    succ_left = successor->detach_left();
+    succ_right = successor->detach_right();
+    succ_parent = successor->get_parent();
 
-    //detach node1 from its parent. If it has no parent (it is root)
+    //detach successor from its parent. If it has no parent (it is root)
     //we release the ownership of root
-    if (node1->is_right())
+    if (successor->is_right())
     {
-        n1_parent->detach_right();
+        succ_parent->detach_right();
     }
-    else if (node1->is_left())
+    else if (successor->is_left())
     {
-        n1_parent->detach_left();
+        succ_parent->detach_left();
     }
     else
     {
         root.release();
     }
     
-    //Detach node2's children
-    n2_left = node2->detach_left();
-    n2_right = node2->detach_right();
-    n2_parent = node2->get_parent();
+    //Detach current's children
+    curr_left = current->detach_left();
+    curr_right = current->detach_right();
+    curr_parent = current->get_parent();
 
-    //detach node2 from its parent. If it has no parent (it is root)
+    //detach current from its parent. If it has no parent (it is root)
     //we release the ownership of root
-    if (node2->is_right())
+    if (current->is_right())
     {
-        n2_parent->detach_right();
+        curr_parent->detach_right();
     }
-    else if (node2->is_left())
+    else if (current->is_left())
     {
-        n2_parent->detach_left();
+        curr_parent->detach_left();
     }
     else
     {
         root.release();
     }
     
+    //used to avoid cycles
+    bool is_succ_child_of_current = succ_parent == current;
     
-    if (n1_parent)
+    if (succ_parent)
     {   
-        //to check whether node1 was left or right child we 
-        if (comparator(node2->get_data().first, n1_parent->get_data().first))
+        // if there would not be this check, and succ_parent == current
+        // then comparator woould compare the node against the node itself
+        // returning therefore false and then assigning the right child of 
+        // current to current itself
+        if (!is_succ_child_of_current)
         {
-            n1_parent->set_left(node2);
-        }
-        else
-        {
-            n1_parent->set_right(node2);
+            if (comparator(current->get_data().first, succ_parent->get_data().first))
+            {
+                succ_parent->set_left(current);
+            }
+            else
+            {
+                succ_parent->set_right(current);
+            }
         }
     }
     else
     {
-        root.reset(node2);
+        root.reset(current);
     }
-    node2->set_left(n1_left);
-    node2->set_right(n1_right);
+    current->set_left(succ_left);
+    current->set_right(succ_right);
 
-    if (n2_parent)
+    if (curr_parent)
     {
-        if (comparator(node1->get_data().first, n2_parent->get_data().first))
+        if (comparator(successor->get_data().first, curr_parent->get_data().first))
         {
-            n2_parent->set_left(node1);
+            curr_parent->set_left(successor);
         }
         else
         {
-            n2_parent->set_right(node1);
+            curr_parent->set_right(successor);
         }
     }
     else
     {
-        root.reset(node1);
+        root.reset(successor);
     }
-    node1->set_left(n2_left);
-    node1->set_right(n2_right);
+    successor->set_left(curr_left);
+    // curr_right would be null if check == true
+    successor->set_right(is_succ_child_of_current ? current: curr_right);
 }
 
 template <class KeyType, class ValueType, class CompareType>
@@ -569,7 +610,7 @@ void bst<KeyType, ValueType, CompareType>::erase_aux(const KeyType &key, Node* n
         swap(successor, current);
         //recursively delete current, which now is either a leaf or a node
         //with only one child
-        erase_aux(key, current->get_parent());
+        erase_aux(key, current);
     }
     //Case 3: current has only one child
     else
@@ -611,7 +652,7 @@ std::ostream &operator<<(std::ostream &os, const bst<KeyType,ValueType,CompareTy
 }
 
 template <class KeyType, class ValueType, class CompareType>
-void bst<KeyType,ValueType,CompareType>::buildTree(std::vector<std::pair<KeyType, ValueType>> &nodes, int start, int end)
+void bst<KeyType,ValueType,CompareType>::buildTree(std::vector<std::pair<const KeyType, ValueType>> &nodes, int start, int end)
 {
     if (start > end)
         return;
@@ -659,12 +700,12 @@ bool bst<KeyType,ValueType,CompareType>::isBalanced(typename bst<KeyType, ValueT
 template <class KeyType, class ValueType, class CompareType>
 void bst<KeyType, ValueType, CompareType>::balance()
 {
-    std::vector<std::pair<KeyType, ValueType>> nodes;
+    std::vector<std::pair<const KeyType, ValueType>> nodes;
     for(auto& node : *this)
     {
         nodes.push_back(node);
     }
-    
+
     clear();
 
     buildTree(nodes, 0, nodes.size() - 1);
@@ -683,7 +724,7 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](const KeyType &key) no
             {
                 auto pair = std::pair<const KeyType, ValueType>{key, ValueType{}};
                 //current->left = std::make_unique<Node>(pair, current);
-                current->set_left(pair, current);
+                current->set_left(std::forward<std::pair<const KeyType, ValueType>>(pair));
                 return current->get_left()->get_data().second;
             }
             else
@@ -697,7 +738,7 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](const KeyType &key) no
             if (!current->get_right())
             {
                 auto pair = std::pair<const KeyType, ValueType>{key, ValueType{}};
-                current->set_right(pair, current);
+                current->set_right(std::forward<std::pair<const KeyType, ValueType>>(pair));
                 return current->get_right()->get_data().second;
             }
             else
@@ -713,7 +754,7 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](const KeyType &key) no
 
     //root is null
     auto pair = std::pair<const KeyType, ValueType>{key, ValueType{}};
-    root = std::make_unique<Node>(pair, nullptr);
+    root = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(pair), nullptr);
     return root->get_data().second;
 }
 
@@ -728,9 +769,10 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](KeyType &&key) noexcep
             if (!current->get_left())
             {
                 auto pair = std::pair<const KeyType, ValueType>{
-                    std::forward<KeyType>(key), ValueType{}};
+                    std::forward<const KeyType>(key), ValueType{}
+                };
                 //current->left = std::make_unique<Node>(pair, current);
-                current->set_left(pair, current);
+                current->set_left(std::forward<std::pair<const KeyType, ValueType>>(pair));
                 return current->get_left()->get_data().second;
             }
             else
@@ -744,10 +786,10 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](KeyType &&key) noexcep
             if (!current->get_right())
             {
                 auto pair = std::pair<const KeyType, ValueType>{
-                    std::forward<KeyType>(key), ValueType{}
+                    std::forward<const KeyType>(key), ValueType{}
                 };
                 //current->right = std::make_unique<Node>(pair, current);
-                current->set_right(pair, current);
+                current->set_right(std::forward<std::pair<const KeyType, ValueType>>(pair));
                 return current->get_right()->get_data().second;
             }
             else
@@ -763,8 +805,8 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](KeyType &&key) noexcep
     }
 
     //root is null
-    auto pair = std::pair<const KeyType, ValueType>{std::forward<KeyType>(key), ValueType{}};
-    root = std::make_unique<Node>(pair, nullptr);
+    auto pair = std::pair<const KeyType, ValueType>{std::forward<const KeyType>(key), ValueType{}};
+    root = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(pair), nullptr);
     return root->get_data().second;
 }
 

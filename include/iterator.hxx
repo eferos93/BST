@@ -20,7 +20,6 @@ class __iterator
         {
             return current;
         }
-
     public:
         __iterator() = default;
         explicit __iterator(Node * node) noexcept : current{node}

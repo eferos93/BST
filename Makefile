@@ -1,8 +1,8 @@
-TEST = test.o
+TEST = test.o 
 BENCHMARK = benchmark.o
 DEFINES = NONE # PTREE for tree printing
 CXX = c++
-TESTSRC = src/test.cpp
+TESTSRC = src/test.cpp 
 BENCHSRC = src/benchmark.cpp
 CXXFLAGS = -std=c++17 -Wall -Wextra
 IFLAGS = -I include
@@ -14,6 +14,7 @@ $(TEST): $(TESTSRC)
 
 $(BENCHMARK): $(BENCHSRC)
 	$(CXX) -g $< -o $(BENCHMARK) $(CXXFLAGS) $(IFLAGS) $(DFLAGS)
+
 clean: 
 	@rm -fr *.o docs/html docs/latex
 

@@ -12,47 +12,47 @@ class bst<KeyType, ValueType, CompareType>::Node
 {
 private:
     /**
-         * tuple containing the key which is an unique identifier for the node
-         * and the value
-         */
+     * tuple containing the key which is an unique identifier for the node
+     * and the value
+     */
     std::pair<const KeyType, ValueType> data;
     /**
-         * pointers to left and right child
-         */
+     * pointers to left and right child
+     */
     std::unique_ptr<Node> left, right;
     /**
-         * pointer to parent node
-         */
+     * pointer to parent node
+     */
     Node *parent;
 
 public:
     /**
-         * @brief Default constructor
-         */
+     * @brief Default constructor
+     */
     Node() = default;
+
     /**
-         * @brief Construct a new node given a tuple (key,value)
-         * @param data Data to be inserted into the node
-         */
+     * @brief Construct a new node given a tuple (key,value)
+     * @param data Data to be inserted into the node
+     */
     Node(std::pair<const KeyType, ValueType> data) : data{data}, left{nullptr}, right{nullptr},
                                                parent{nullptr} {}
     /**
-         * @brief Construct a new node given a tuple (key,value)
-         * and a pointer to parent
-         * @param data Data to be inserted inot the node
-         * @param parent Pointer to parent node
-         */
+     * @brief Construct a new node given a tuple (key,value)
+     * and a pointer to parent
+     * @param data Data to be inserted inot the node
+     * @param parent Pointer to parent node
+     */
     Node(std::pair<const KeyType, ValueType> data, Node *parent) : data{data}, left{nullptr}, right{nullptr},
                                                              parent{parent} {}
 
-    /**
-      * @brief Construct a new node given a pointer to a node (copy constructor)
-      * @param node Reference to the node to be copied
-      */
-    //Node(const Node &node) : data{node.data}, left{nullptr}, right{nullptr},
-    //                         parent{nullptr} {}
+
     Node(const Node& node) = delete;
     
+    /**
+     * @brief Move constructor.
+     * @param node  rvalue reference to a node
+     */
     Node(Node&& node) noexcept :
         data{std::move(node.data)},
         left{std::move(node.left)},
@@ -75,24 +75,6 @@ public:
     
     //We do not need a copy constructor
     Node& operator=(const Node&) = delete;
-    
-    /**
-     * @brief equality operator
-     * @param b pointer to another node to be checked
-     */
-    //bool operator==(Node *b)
-    //{
-    //    return &this == b;
-    //}
-
-    /**
-     * @brief inequality operator
-     * @param b pointer to the node to be checked
-     */
-    //bool operator!=(Node *b)
-    //{
-    //    return !(&this == b);
-    //}
 
     /**
      * @brief Method to check if this instance of Node is right child of its parent
@@ -203,34 +185,49 @@ public:
         
     }
 
-    void set_left(std::pair<const KeyType, ValueType> &&data, Node *parent)
+    /**
+     * @brief Setter for the left node by constructing the node in-place
+     * @param data The pair to be inserted into the node
+     * @throws std::logic_error if left already exists
+     */
+    void set_left(std::pair<const KeyType, ValueType> &&data)
     {
         if (!left)
         {
-            left = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(data), parent);
+            left = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(data), this);
         }
         else
         {
-            throw std::invalid_argument("Left node already exists. It is not possible to attach a new one.");
+            throw std::logic_error("Left node already exists. It is not possible to attach a new one.");
         }
         
     }
 
-    void set_left(const std::pair<const KeyType, ValueType> &data, Node *parent)
+    /**
+     * @brief Setter for the left node by constructing the node in-place
+     * @param data The pair to be inserted into the node
+     * @throws std::logic_error if left already exists
+     */
+    
+    void set_left(const std::pair<const KeyType, ValueType> &data)
     {
         if (!left)
         {
-            left = std::make_unique<Node>(data, parent);
+            left = std::make_unique<Node>(data, this);
         }
         else
         {
-            throw std::invalid_argument("Left node already exists. It is not possible to attach a new one.");
+            throw std::logic_error("Left node already exists. It is not possible to attach a new one.");
         }
         
     }
+    
     /**
      * @brief Setter for the right node
      * @param new_node Pointer to the new_node to be inserted
+     * @throws std::invalid_argument if new_node is equal to the parent of this
+     * @throws std::logic_error if right is not null
+     * 
      * The method will abort if new_node points to the parent of this instance
      * as this would result in creating a cycle between this and new_node.
      * The program is aborted also if right is not null.
@@ -246,9 +243,10 @@ public:
 
         if (new_node)
         {
+            //std::cout << data.first << ": hola" << std::endl;
             if (right)
             {
-                throw std::invalid_argument("Right node already exists. It is not possible to attach a new one.");
+                throw std::logic_error("Right node already exists. It is not possible to attach a new one.");
             }
             right.reset(new_node);
             right->parent = this;
@@ -260,30 +258,41 @@ public:
         
     }
 
-    void set_right(std::pair<const KeyType, ValueType> &&data, Node *parent)
+    /**
+     * @brief Setter for the right node by constructing the node in-place
+     * @param data The pair to be inserted into the node
+     * @throws std::logic_error if right already exists
+     */
+    void set_right(std::pair<const KeyType, ValueType> &&data)
     {
         if (!right)
         {
-            right = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(data), parent);
+            right = std::make_unique<Node>(std::forward<std::pair<const KeyType, ValueType>>(data), this);
         }
         else
         {
-            throw std::invalid_argument("Right node already exists. It is not possible to attach a new one.");
+            throw std::logic_error("Right node already exists. It is not possible to attach a new one.");
         }
     }
 
-    void set_right(const std::pair<const KeyType, ValueType> &data, Node *parent)
+    /**
+     * @brief Setter for the right node by constructing the node in-place
+     * @param data The pair to be inserted into the node
+     * @throws std::logic_error if right already exists
+     */
+    
+    void set_right(const std::pair<const KeyType, ValueType> &data)
     {
         if (!right)
         {
-            right = std::make_unique<Node>(data, parent);
+            right = std::make_unique<Node>(data, this);
         }
         else
         {
-            throw std::invalid_argument("Right node already exists. It is not possible to attach a new one.");
+            throw std::logic_error("Right node already exists. It is not possible to attach a new one.");
         }
     }
-
+    
     /**
      * @brief Setter for the parent
      * @param node Pointer to the new Node's parent
