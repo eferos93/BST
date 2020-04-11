@@ -327,7 +327,7 @@ template <class KeyType, class ValueType, class CompareType>
 std::pair<typename bst<KeyType, ValueType, CompareType>::iterator, bool> 
 bst<KeyType, ValueType, CompareType>::insert(const std::pair<const KeyType, ValueType> &data)
 {
-    // If tree isn't empty, cur node will be created
+    // If tree isn't empty, current node will be created
     Node *current = root.get();
     while (current)
     {
