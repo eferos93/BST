@@ -1,10 +1,11 @@
 
 /**
  * node.hxx file
- * @authors: Eros Fabrici, ... , ....
- **/
-//#include <iostream>
-//#include <memory>
+ * @author: Eros Fabrici
+ * @author: Dogan Can Demirbilek
+ * @author: Alessandro Scardoni
+ */
+
 #include <cassert> 
 #include <exception>
 template <class KeyType, class ValueType, class CompareType>
@@ -47,6 +48,7 @@ public:
                                                              parent{parent} {}
 
 
+    // no need of a copy constructor
     Node(const Node& node) = delete;
     
     /**
@@ -73,7 +75,7 @@ public:
         return *this;
     }
     
-    //We do not need a copy constructor
+    //We do not need a copy operator
     Node& operator=(const Node&) = delete;
 
     /**
@@ -141,16 +143,6 @@ public:
         return parent;
     }
 
-    /**
-     * @brief Setter for the data
-     * @param data R-value reference to the data to be inserted
-     
-    void set_data(std::pair<const KeyType, ValueType>&& data)
-    {
-        //this->data = std::forward<std::pair<const KeyType, ValueType>>(data);
-        this->data = data;
-    }
-    */
     /**
      * @brief Setter for the left node
      * @param new_node Pointer to the new_node to be inserted
@@ -312,7 +304,6 @@ public:
         Node* ptr = nullptr;
         if (right)
         {
-            //right->parent = nullptr;
             right->set_parent(nullptr);
             ptr = right.release();
             right = nullptr;
@@ -331,7 +322,6 @@ public:
         Node* ptr = nullptr;
         if (left)
         {
-            //left->parent = nullptr;
             left->set_parent(nullptr);
             ptr = left.release();
             left = nullptr;

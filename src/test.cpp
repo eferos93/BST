@@ -2,31 +2,31 @@
 #include "bst.hxx"
 
 int main() {
-    bst<int, int> tree{};
+    bst<int, int> tree1{};
     for (int i = 0; i < 10; i++)
     {
-        tree.insert(std::pair<const int, int>(i,i));
+        tree1.insert(std::pair<const int, int>(i,i));
     }
     
-    std::cout << tree << std::endl;
+    std::cout << tree1 << std::endl;
 
-    tree.erase(0);
-    std::cout << tree << std::endl;
+    tree1.erase(0);
+    std::cout << tree1 << std::endl;
 
-    tree.erase(3);
+    tree1.erase(3);
     
-    std::cout << tree << std::endl;
+    std::cout << tree1 << std::endl;
 
-    tree.erase(6);
+    tree1.erase(6);
 
-std::cout << tree << std::endl;
+std::cout << tree1 << std::endl;
 
-    tree.balance();
-    std::cout << tree << std::endl;
-    tree.erase(4);
-        std::cout << tree << std::endl;
+    tree1.balance();
+    std::cout << tree1 << std::endl;
+    tree1.erase(4);
+        std::cout << tree1 << std::endl;
 
-    /*bst<int, int> tree{};
+    bst<int, int> tree{};
     tree.emplace(4,4);
     tree.emplace(2,2);
     tree.emplace(1,1);
@@ -59,7 +59,7 @@ std::cout << tree << std::endl;
 
     
     // Printing the empty BST
-    /*
+    
     bst<int,int> b{};
     std::cout << "Empty Tree\n" <<  b << std::endl;
     
@@ -170,5 +170,5 @@ std::cout << tree << std::endl;
     b.clear();
     std::cout << "\nAfter clear" <<  b << std::endl;
     std::cout << b << std::endl;
-    */
+    
 }

@@ -28,6 +28,7 @@ class bst
         std::unique_ptr<Node> root;
         using iterator = __iterator<Node,KeyType,ValueType,CompareType,false>;
         using const_iterator = __iterator<Node,KeyType,ValueType,CompareType,true>;
+
         /**
          * @brief Given a node in a tree, returns its successor
          * @param node A pointer to a node
@@ -86,7 +87,7 @@ class bst
         /**
          * @brief Default constructor
          */
-        bst() {}
+        bst() noexcept = default;
         
         /**
          * @brief Constructor with node
@@ -723,7 +724,6 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](const KeyType &key) no
             if (!current->get_left())
             {
                 auto pair = std::pair<const KeyType, ValueType>{key, ValueType{}};
-                //current->left = std::make_unique<Node>(pair, current);
                 current->set_left(std::forward<std::pair<const KeyType, ValueType>>(pair));
                 return current->get_left()->get_data().second;
             }
@@ -771,7 +771,6 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](KeyType &&key) noexcep
                 auto pair = std::pair<const KeyType, ValueType>{
                     std::forward<const KeyType>(key), ValueType{}
                 };
-                //current->left = std::make_unique<Node>(pair, current);
                 current->set_left(std::forward<std::pair<const KeyType, ValueType>>(pair));
                 return current->get_left()->get_data().second;
             }
@@ -788,7 +787,6 @@ ValueType& bst<KeyType,ValueType,CompareType>::operator[](KeyType &&key) noexcep
                 auto pair = std::pair<const KeyType, ValueType>{
                     std::forward<const KeyType>(key), ValueType{}
                 };
-                //current->right = std::make_unique<Node>(pair, current);
                 current->set_right(std::forward<std::pair<const KeyType, ValueType>>(pair));
                 return current->get_right()->get_data().second;
             }
