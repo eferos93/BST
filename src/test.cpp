@@ -19,7 +19,7 @@ int main() {
 
     tree1.erase(6);
 
-std::cout << tree1 << std::endl;
+    std::cout << tree1 << std::endl;
 
     tree1.balance();
     std::cout << tree1 << std::endl;
