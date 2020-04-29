@@ -1,3 +1,7 @@
+/** @author: Eros Fabrici
+ * @author: Dogan Can Demirbilek
+ * @author: Alessandro Scardoni
+ **/
 #include <iterator>
 
 template<class Node, class KeyType, class ValueType, class CompareType, bool Const>
@@ -32,8 +36,6 @@ class __iterator
         reference operator*() const noexcept
         {
             return current->get_data();
-            //std::pair<KeyType, ValueType> data = current->data;
-            //return data;
         }
 
         pointer operator->() const noexcept
