@@ -2,7 +2,6 @@
  * @author: Dogan Can Demirbilek
  * @author: Alessandro Scardoni
  **/
-#include <iterator>
 
 template<class Node, class KeyType, class ValueType, class CompareType, bool Const>
 class __iterator
