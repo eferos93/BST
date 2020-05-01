@@ -569,7 +569,7 @@ template <class KeyType, class ValueType, class CompareType>
 void bst<KeyType, ValueType, CompareType>::erase_aux(const KeyType &key, Node* node)
 {
     
-    Node* current = find_aux(key, node).get_node();
+    Node* current = find_aux(key, node).current;
     if (!current)
     {
         return;

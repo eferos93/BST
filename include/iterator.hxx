@@ -19,10 +19,6 @@ class __iterator
 
     private:
         Node * current;
-        Node * get_node() noexcept
-        {
-            return current;
-        }
     public:
         __iterator() = default;
         explicit __iterator(Node * node) noexcept : current{node}
