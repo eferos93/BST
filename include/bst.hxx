@@ -234,7 +234,7 @@ class bst
          * @brief Method to get the root of tree
          * @return Pointer to Node
          */
-        Node* getRoot() 
+        Node* getRoot() const
         {
             return root.get();
         }

@@ -111,6 +111,15 @@ public:
      * @brief Getter for the data
      * @return Reference to the data contained in this instance of Node
      */
+    const std::pair<const KeyType, ValueType> &get_data() const noexcept
+    {
+        return data;
+    }
+
+    /**
+     * @brief Getter for the data
+     * @return Reference to the data contained in this instance of Node
+     */
     std::pair<const KeyType, ValueType> &get_data() noexcept
     {
         return data;
@@ -126,6 +135,15 @@ public:
     }
 
     /**
+     * @brief Getter for left child
+     * @return Referece to the left child
+     */
+    const std::unique_ptr<Node> &get_left() const noexcept
+    {
+        return left;
+    }
+
+    /**
      * @brief Getter for right child
      * @return Reference to the right child
      */
@@ -135,10 +153,19 @@ public:
     }
 
     /**
+     * @brief Getter for right child
+     * @return Reference to the right child
+     */
+    const std::unique_ptr<Node> &get_right() const noexcept
+    {
+        return right;
+    }
+
+    /**
      * @brief Getter for the parent
      * @return Pointer to the parent Node
      */
-    Node *get_parent() noexcept
+    Node *get_parent() const noexcept
     {
         return parent;
     }
